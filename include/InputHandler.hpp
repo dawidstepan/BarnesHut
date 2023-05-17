@@ -12,9 +12,6 @@
  * std::vector<Body> stateOfBodies;
  * InputHandler newInputHandler(&stateOfBodies);
  * \endcode
- *
- * \todo implement parseFile
- * \todo maybe implement a function that fills stateOfBodies randomly
  */
 class InputHandler {
 public:
@@ -22,11 +19,14 @@ public:
     InputHandler(std::vector<Body>* stateOfBodies): stateOfBodies(stateOfBodies){
     };
     /// creats Body object based on intput and adds it ot stateOfBodies
-    void addToStateOfBodies(int size, int weight, Vector2D pos, Vector2D vel, Vector2D acc);
+    void addToStateOfBodies(int size, double weight, Vector2D pos, Vector2D vel, Vector2D acc);
+
     /// reads in a user provided txt file and calls addToStateOfBodies for every relevant line
     void parseFile();
 
-    void fillStateOdBodiesRandomly(int n,int size=1000, int weight = 1e19);
+    /// creates n-bodies, randomly distributed over 1AU^2 (AU = astronomical unit)
+    /// default values correspond roughly to size and mass of our moon
+    void fillStateOdBodiesRandomly(int n,int size = 1000, double weight  = 1e19);
 
 private:
     std::vector<Body>* stateOfBodies;

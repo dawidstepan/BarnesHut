@@ -12,14 +12,13 @@
 // * * * * * * * * * * * * * * To Do-Liste * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 // @todo finish runSim method
-// @todo change data type in Vector2D (see warnings)
 // @todo try adding SFML to the conanfile.txt and see if it works
+// @todo implement visualization stuff (nothing on that part is included yet)
 // @todo implement parseFile in InputHandler
 // @todo implement BarnesHut & Naive algorithm
 // @todo implement numerical integrator
-// @todo eventually implement fillStateOdBodiesRandomly in InputHandler
 // @todo eventually implement writeDataToDisc in Writer
-// @todo maybe add logging functionality for more convenient debuging
+// @todo maybe add logging functionality for more convenient debugging
 // @todo maybe optimize stateOfBodiesOvertime (we don't need to save methods, only attributes)
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
@@ -32,12 +31,13 @@ int main(){
     generalParameters.theta = 2222;
     generalParameters.totalNumberOfSteps= 3;
 
-    // just sample code to show some functions in action
-    Vector2D newVector(123, 456);
-    Body NewBody(100, 1, newVector, newVector, newVector);
-    InputHandler inputHandler(&currentStateOfBodies);
-    currentStateOfBodies.push_back(NewBody);
-    inputHandler.addToStateOfBodies(1, 2, newVector, newVector, newVector);
-    std::cout << currentStateOfBodies[1].getSize() << std::endl;
+    // just random sample code to show some functions in action
+    Vector2D newVector(1, 2);  //that's how we initialize our vector2D Object,
+    Body NewBody(100, 1, newVector, newVector, newVector); // similar to the body object
+    InputHandler inputHandler(&currentStateOfBodies); // we have to initialize inputHandler with pointer to currentStateOfBodies
+    inputHandler.fillStateOdBodiesRandomly(3);
+    std::cout << "The third body has the coordinates ("
+                << currentStateOfBodies[2].getPos().x
+                << ", " << currentStateOfBodies[2].getPos().y  << ")" << std::endl;
     return 0;
 }
