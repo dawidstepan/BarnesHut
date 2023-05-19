@@ -1,53 +1,105 @@
-#include <string>
+#include <iostream>
 #include "Simulation.hpp"
-#include "BarnesHutAlgorithm.hpp"
-#include "NaiveAlgorithm.hpp"
-#include "Integrator.hpp"
+#include "EulerIntegrator.hpp"
+#include "Units.hpp"
+
+void Simulation::runSimulation() {
+    // this line creates a special pointer to a member function of the Simulation class
+    Vector2D (Simulation::* getForce)(std::vector<Body>*, std::vector<Body>::iterator iteratorToBody);
+    //depending on the user input, that is stored in generalParameters, this member pointer will point to a different function
+    switch (generalParameters->algorithmToUse){
+        case 0: //this means we will use the simplest, brute-force-ish approach to calculate the force
+            getForce = &Simulation::getForceByNaiveAlgorithm;
+            break;
+        case 1: //this means we will use the Barnes-Hut algorithm to approximate the force
+            getForce = &Simulation::getForceByBarnesHutAlgorithm;
+            break;
+    }
+
+    EulerIntegrator eulerIntegrator; // Euler Method is the most basic way of numerical integration
+    std::vector<Body> newStateOfBodies; // describes how currentStateOfBodies will look after the next time step
+
+    //loop over all time steps
+    for (int i=0; i < generalParameters->totalNumberOfSteps; i++){
+        // now this will loop over all bodies, update their states and save them in newStateOfBodies
+        for (auto iteratorToBody = currentStateOfBodies->begin(); iteratorToBody != currentStateOfBodies->end(); ++iteratorToBody) {
+            // calculating the total force with the algorithm the 'getForce' pointer is set to
+            Vector2D totalForce = ((*this).*(getForce))(currentStateOfBodies, iteratorToBody);
+
+            //dereferencing the iterator just for convenience
+            Body newBody = *iteratorToBody;
+
+            //calculate & update acceleration, acceleration in m/(s^2)
+            Vector2D deltaAcc = totalForce/(newBody.getWeight()*sunMassToKg);
+            Vector2D currentAcc = newBody.getAcc();
+            newBody.setAcc(currentAcc + deltaAcc);
+
+            //integrating over the acceleration to get the velocity (in m/s), then updating it
+            long double vx = eulerIntegrator.integrationStep(newBody.getVel().x, generalParameters->dt, newBody.getAcc().x);
+            long double vy = eulerIntegrator.integrationStep(newBody.getVel().y, generalParameters->dt, newBody.getAcc().y);
+            Vector2D newVel(vx, vy);
+            newBody.setVel(newVel);
+
+            //integrating over the velocity to get the position, then converting from m to Astronomical Units (AU), then updating
+            long double x = eulerIntegrator.integrationStep(newBody.getPos().x * AUtoMeter, generalParameters->dt, newBody.getVel().x) * meterToAU;
+            long double y = eulerIntegrator.integrationStep(newBody.getPos().y * AUtoMeter, generalParameters->dt, newBody.getVel().y) * meterToAU;
+            Vector2D newPos(x, y);
+            newBody.setPos(newPos);
+
+            //now all the parameters in newBody are up-to-date
+            newStateOfBodies.push_back(newBody);
+
+            std::cout << "Body at (" << newPos.x << ", " << newPos.y << ") [AU]: \n"
+                        << "\tcurrent force: " << totalForce.y << " N\n"
+                        << "\tcurrent velocity: " << newVel.y << " m/s\n"<< std::endl;
+        }
+        // we might not want to save to memory on this particular iteration, but if we do, update the StateOfBodiesOverTime vector
+        if (i % generalParameters->saveOnEveryXthStep == 0) {
+            updateStateOfBodiesOverTime(*currentStateOfBodies);
+        }
+        // overwrite the current state with the new state and clear the new state
+        currentStateOfBodies->assign(newStateOfBodies.begin(), newStateOfBodies.end());
+        newStateOfBodies.clear();
+    }
+}
+
+
+
+// * * * * * * * * * * * * * *
+// *  yet to be implemented! *
+// * * * * * * * * * * * * * *
+Vector2D Simulation::getForceByBarnesHutAlgorithm(std::vector<Body>*, std::vector<Body>::iterator iteratorToBody){
+    std::cout << "this is the barnes hut algorithm lul" << std::endl;
+}
+
+/// the most basic approach to calculating the force between the objects
+Vector2D Simulation::getForceByNaiveAlgorithm(std::vector<Body> *, std::vector<Body>::iterator iteratorToBody) {
+    Vector2D totalForce(0, 0);
+    for (auto iteratorToOtherBody = currentStateOfBodies->begin(); iteratorToOtherBody != currentStateOfBodies->end(); ++iteratorToOtherBody){
+        //check if we aren't comparing the same bodies with each other
+        if (iteratorToBody != iteratorToOtherBody) {
+            //getting relevant data
+            Vector2D pos1 = iteratorToBody->getPos();
+            Vector2D pos2 = iteratorToOtherBody->getPos();
+            long double m1 = iteratorToBody->getWeight();
+            long double m2 = iteratorToOtherBody->getWeight();
+            /*
+             * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+             *  maybe here would be a good place to call a collision-detection function? *
+             * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+            */
+            //we are just rn computing the distance, after all
+            Vector2D distanceVector = pos2-pos1;
+            long double distanceNorm = distanceVector.getL2Norm();
+            //calculating the force (in newton)
+            Vector2D force = distanceVector*((m1*m2))/((distanceNorm * distanceNorm * distanceNorm))*conversionFactor;
+            totalForce =  totalForce + force;
+            return totalForce;
+        }
+    }
+
+}
 
 void Simulation::updateStateOfBodiesOverTime(std::vector<Body> currentStateOfBodies) {
     stateOfBodiesOverTime -> push_back(currentStateOfBodies);
 };
-
-//* * * * * * * * * * *
-//UNDER CONSTRUCTION  *
-//* * * * * * * * * * *
-void Simulation::runSimulation(int dt, int totalNumberOfSteps, int saveOnEveryXthStep,  std::vector<Body> currentStateOfBodies, int algorithmToUse) {
-    NaiveAlgorithm naiveAlgorithm;
-    BarnesHutAlgorithm barnesHutAlgorithm;
-    Integrator integrator;
-
-    for (int i=0; i < totalNumberOfSteps; i++){
-        if (i % saveOnEveryXthStep == 0){
-            updateStateOfBodiesOverTime(currentStateOfBodies);
-        };
-        std::vector<Vector2D> forceVectorVector;    //< the i-th index represents the force acting on the i-th body in currentStateOfBodies
-        std::vector<Vector2D> deltaAccVectorVector; //< the i-th index represents the change in the acceleration of the i-th body in currentStateOfBodies
-        std::vector<Vector2D> deltaVelVectorVector; //< the i-th index represents the change in the velocity of the i-th body in currentStateOfBodies
-        std::vector<Vector2D> deltaPosVectorVector; //< the i-th index represents the change in the position of the i-th body in currentStateOfBodies
-
-        //now calculate the forces
-        //meaning, take the currenState of bodies as input and return a vector that consists of vectors representing the forces acting on the corresponding body
-        //this can be done either with the naive approach or the barnes-hut algorithm
-        switch (algorithmToUse){
-            case 0:
-                forceVectorVector = naiveAlgorithm.calculateForce(currentStateOfBodies);
-                break;
-            case 1:
-                forceVectorVector = barnesHutAlgorithm.calculateForce(currentStateOfBodies);
-                break;
-        };
-        //now integrate over the force divided by the mass to get the delta-v the body gained
-        for (int vectorIndex = 0; vectorIndex < forceVectorVector.size(); ++vectorIndex){
-            int mass = currentStateOfBodies[vectorIndex].getWeight();
-            deltaVelVectorVector.push_back(integrator.integrate(forceVectorVector[i]/mass, dt));
-        }
-        //now integrate over the velocity to get the delta-position the body gained
-        for (int vectorIndex = 0; vectorIndex < forceVectorVector.size(); ++vectorIndex){
-            int mass = currentStateOfBodies[vectorIndex].getWeight();
-            deltaVelVectorVector.push_back(integrator.integrate(forceVectorVector[i]/mass, dt));
-        }
-        //now modify the position, velocity and acceleration of the body in the currentStateOfBodies accordingly
-        //check for collision control
-        //then, maybe modify the attributes of the bodies in the currentStateOfBodies again
-    }
-}

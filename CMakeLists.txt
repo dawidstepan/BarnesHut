@@ -15,14 +15,14 @@ set(SOURCES
         src/Simulation.cpp
         src/Writer.cpp
         src/Body.cpp
-        src/BarnesHutAlgorithm.cpp src/NaiveAlgorithm.cpp include/NaiveAlgorithm.hpp src/Integrator.cpp include/Integrator.hpp)
+        src/NaiveAlgorithm.cpp include/NaiveAlgorithm.hpp)
 
 # encapsulate source files in variable
 set (HEADERS
         include/InputHandler.hpp
         include/Simulation.hpp
         include/Writer.hpp
-        include/Body.hpp include/Vector2D.hpp include/GeneralParameters.hpp include/BarnesHutAlgorithm.hpp src/NaiveAlgorithm.cpp include/NaiveAlgorithm.hpp src/Integrator.cpp include/Integrator.hpp)
+        include/Body.hpp include/Vector2D.hpp include/GeneralParameters.hpp src/NaiveAlgorithm.cpp include/NaiveAlgorithm.hpp include/EulerIntegrator.hpp include/Units.hpp)
 
 
 

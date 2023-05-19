@@ -8,7 +8,7 @@
 
 class NaiveAlgorithm {
 public:
-    std::vector<Vector2D> calculateForce(std::vector<Body> currentStateOfBodies);
+    std::vector<Vector2D> runAlgorithm(std::vector<Body> currentStateOfBodies);
 };
 
 

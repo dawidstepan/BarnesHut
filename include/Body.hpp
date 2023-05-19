@@ -50,7 +50,7 @@ public:
 
 private:
     int size; //< radius in km
-    double weight; //< weight in tons
+    long double weight; //< weight in tons
     Vector2D pos; //<position vector
     Vector2D vel; //<velocity vector
     Vector2D acc; //<acceleration vector

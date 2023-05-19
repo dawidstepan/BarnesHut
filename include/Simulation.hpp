@@ -5,29 +5,36 @@
 #include "Body.hpp"
 #include "GeneralParameters.hpp"
 
-
+/**
+ * includes the core functionality of our programm.
+ * has to be initiaized with a pointer to currentStateOfBodies,
+ * a pointer to stateOfBodiesOverTime,
+ * and a pointer to generalParameters
+ */
 class Simulation {
 public:
-    Simulation(std::vector<Body> *stateOfBodies,
+    Simulation(std::vector<Body> *currentStateOfBodies,
                std::vector<std::vector<Body>> *stateOfBodiesOverTime,
                const GeneralParameters *generalParameters) :
-            stateOfBodies(stateOfBodies),
+            currentStateOfBodies(currentStateOfBodies),
             stateOfBodiesOverTime(stateOfBodiesOverTime),
             generalParameters(generalParameters) {};
-
-    void updateStateOfBodiesOverTime(std::vector<Body> currentState);
-
-
-    void runSimulation(int dt, int totalNumberOfSteps, int saveOnEveryXthStep, std::vector<Body> currentStateOfBodies, int algorithmToUse);
-
+    ///executes the Simulation
+    void runSimulation();
 
 private:
-    std::vector<Body> *stateOfBodies;
+    void updateStateOfBodiesOverTime(std::vector<Body> currentState);
+
+    Vector2D getForceByNaiveAlgorithm(std::vector<Body>*, std::vector<Body>::iterator iteratorToBody);
+
+    /// the most basic approach to calculating the force between the objects
+    Vector2D getForceByBarnesHutAlgorithm(std::vector<Body>*, std::vector<Body>::iterator iteratorToBody);
+
+
+    std::vector<Body> *currentStateOfBodies;
     std::vector<std::vector<Body>> *stateOfBodiesOverTime;
+
     const GeneralParameters *generalParameters;
-    float theta;
-    int dt;
-    int totalNumberOfSteps;
 };
 
 

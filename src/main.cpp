@@ -1,6 +1,5 @@
-#include <iostream>
 #include <vector>
-//----Custom Includes-----
+
 # include "InputHandler.hpp"
 # include "Simulation.hpp"
 # include "Writer.hpp"
@@ -11,13 +10,13 @@
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 // * * * * * * * * * * * * * * To Do-Liste * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-// @todo finish runSim method
 // @todo try adding SFML to the conanfile.txt and see if it works
 // @todo implement visualization stuff (nothing on that part is included yet)
 // @todo implement parseFile in InputHandler
-// @todo implement BarnesHut & Naive algorithm
-// @todo implement numerical integrator
+// @todo implement BarnesHut algorithm
+// @todo implement collision detection
 // @todo eventually implement writeDataToDisc in Writer
+// @todo maybe implement a better integrator (Verlet-integrator)
 // @todo maybe add logging functionality for more convenient debugging
 // @todo maybe optimize stateOfBodiesOvertime (we don't need to save methods, only attributes)
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -27,17 +26,29 @@ int main(){
     std::vector<std::vector<Body>> stateOfBodiesOverTime;
     GeneralParameters generalParameters;
 
-    generalParameters.dt = 1;
-    generalParameters.theta = 2222;
-    generalParameters.totalNumberOfSteps= 3;
+    generalParameters.dt = 3600;   //dt in seconds
+    generalParameters.theta = 1;
+    generalParameters.totalNumberOfSteps=25;
+    generalParameters.saveOnEveryXthStep=1;
+    generalParameters.algorithmToUse=0;
 
-    // just random sample code to show some functions in action
-    Vector2D newVector(1, 2);  //that's how we initialize our vector2D Object,
-    Body NewBody(100, 1, newVector, newVector, newVector); // similar to the body object
-    InputHandler inputHandler(&currentStateOfBodies); // we have to initialize inputHandler with pointer to currentStateOfBodies
-    inputHandler.fillStateOdBodiesRandomly(3);
-    std::cout << "The third body has the coordinates ("
-                << currentStateOfBodies[2].getPos().x
-                << ", " << currentStateOfBodies[2].getPos().y  << ")" << std::endl;
+    // random sample code to show some functions in action
+    /*
+     * x- & y coordinates in astronomical Units,
+     * weight in sun masses
+     */
+    Vector2D initialPos1(0, -5);
+    Vector2D initialPos2(0, 5);
+    Vector2D nullVector(0, 0);
+
+    InputHandler inputHandler(&currentStateOfBodies);
+    inputHandler.addToStateOfBodies(6e3, 1, initialPos1, nullVector, nullVector);
+    inputHandler.addToStateOfBodies(6e3, 1, initialPos2, nullVector, nullVector);
+
+
+    Simulation simulation(&currentStateOfBodies, &stateOfBodiesOverTime, &generalParameters);
+    simulation.runSimulation();
+
+
     return 0;
 }
