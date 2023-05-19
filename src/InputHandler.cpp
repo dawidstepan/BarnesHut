@@ -18,8 +18,8 @@ void InputHandler::fillStateOdBodiesRandomly(int n, int size, double weight) {
     std::srand(static_cast<unsigned int>(std::time(nullptr)));
 
     for(int m = 0; m<n; m++){
-        long double x = (std::rand() % 100)*0.01; //in astronomical units (1AU ~ 1.4e8 km)
-        long double y = (std::rand() % 100)*0.01;
+        long double x = (std::rand() % 100)*0.1; //in astronomical units (1AU ~ 1.4e8 km)
+        long double y = (std::rand() % 100)*0.1;
         Vector2D pos(x, y);
         Vector2D vel(0, 0);
         Vector2D acc(0, 0);

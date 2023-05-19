@@ -50,10 +50,10 @@ public:
 
 private:
     int size; //< radius in km
-    long double weight; //< weight in tons
-    Vector2D pos; //<position vector
-    Vector2D vel; //<velocity vector
-    Vector2D acc; //<acceleration vector
+    long double weight; //< weight in sun Masses
+    Vector2D pos; //<position vector in Astronomical Units
+    Vector2D vel; //<velocity vector in m/s
+    Vector2D acc; //<acceleration vector in m/(s^2)
 };
 
 

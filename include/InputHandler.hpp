@@ -24,9 +24,9 @@ public:
     /// reads in a user provided txt file and calls addToStateOfBodies for every relevant line
     void parseFile();
 
-    /// creates n-bodies, randomly distributed over 1AU^2 (AU = astronomical unit)
+    /// creates n-bodies, randomly distributed over 10AU^2 (AU = astronomical unit)
     /// default values correspond roughly to size and mass of our sun
-    void fillStateOdBodiesRandomly(int n,int size = 1000, double weight  = 1);
+    void fillStateOdBodiesRandomly(int n,int size = 696340, double weight  = 1);
 
 private:
     std::vector<Body>* stateOfBodies;
