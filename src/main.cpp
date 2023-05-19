@@ -51,6 +51,5 @@ int main(){
     Simulation simulation(&currentStateOfBodies, &stateOfDataPointsOverTime, &generalParameters);
     simulation.runSimulation();
 
-    std::cout << sizeof(DataPoint) <<std::endl;
     return 0;
 }
