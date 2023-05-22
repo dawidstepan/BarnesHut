@@ -40,25 +40,6 @@ include(${CMAKE_BINARY_DIR}/conan_paths.cmake)
 
 find_package(SFML REQUIRED)
 
-
-include_directories(include)
-
-# encapsulate source files in variable
-# set(SOURCES
-#         src/main.cpp
-#         src/InputHandler.cpp
-#         src/Simulation.cpp
-#         src/Writer.cpp
-#         src/Body.cpp
-#         )
-
-# # encapsulate source files in variable
-# set (HEADERS
-#         include/InputHandler.hpp
-#         include/Simulation.hpp
-#         include/Writer.hpp
-#         include/Body.hpp include/Vector2D.hpp include/GeneralParameters.hpp include/EulerIntegrator.hpp include/Units.hpp include/DataPoint.hpp)
-
 file(GLOB CPP_FILES "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp")
 file(GLOB_RECURSE HPP_FILES "${CMAKE_CURRENT_SOURCE_DIR}/include/*.hpp")
 

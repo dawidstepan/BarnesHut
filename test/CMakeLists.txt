@@ -14,10 +14,8 @@ list(APPEND MY_TEST_NAMES "testRenderTargets")
   foreach(MY_TEST_NAME ${MY_TEST_NAMES})
     # build test executable and link project library
     add_executable(${MY_TEST_NAME} ${MY_TEST_NAME}.cpp testasserts.hpp)
-    # include_directories("${PROJECT_ROOT}/include")
-    # target_include_directories(${MY_TEST_NAME} PUBLIC "${PROJECT_ROOT}/include")
     target_link_libraries(${MY_TEST_NAME} PUBLIC ${PROJECT_ROOT_NAME})
-    # target_sources(${MY_TEST_NAME} )
+    
     message("${PROJECT_ROOT}/include")
     # Add to test framework, so test can be built with `make myTests`
     add_dependencies(${TEST_BUILD_TARGET} ${MY_TEST_NAME})
