@@ -73,6 +73,7 @@ void Simulation::runSimulation() {
         // overwrite the current state with the new state, and clear the new state
         currentStateOfBodies->assign(newStateOfBodies.begin(), newStateOfBodies.end());
         newStateOfBodies.clear();
+        currentStateOfDataPoints.clear();
     }
 }
 
