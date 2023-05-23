@@ -1,7 +1,6 @@
 #ifndef GROUPMPROJECT_DATAPOINT_HPP
 #define GROUPMPROJECT_DATAPOINT_HPP
 
-#pragma pack(1)
 /**
  * @brief stripped-down version of Body object to save data on disc efficiently
  *
@@ -13,7 +12,7 @@
  *
  * A body object is 128 byte large - but only 80 byte are made up by numerical data.
  * Sadly, we can not go down to 80 byte with the DataPoint struct, because the compiler adds a lot of padding to satisfy alignment constraints.
- * But with the #pragma pack(1) directive we can go down to 104 byte
+ * But with the #pragma pack(1) directive we can go down to 104 byte -> removed that again, because it led to a stack smashing error when included.
  */
 struct DataPoint{
     int weight;
