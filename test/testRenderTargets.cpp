@@ -10,7 +10,7 @@ int main()
     Vector2D initialPos2(0, 5);
     Vector2D nullVector(0, 0);
 
-    InputHandler inputHandler(&currentStateOfBodies);
+    InputHandler inputHandler(currentStateOfBodies);
     inputHandler.addToStateOfBodies(6e3, 1, initialPos1, nullVector, nullVector);
     inputHandler.addToStateOfBodies(6e3, 1, initialPos2, nullVector, nullVector);
 

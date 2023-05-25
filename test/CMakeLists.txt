@@ -10,13 +10,13 @@ add_custom_target(${TEST_BUILD_TARGET} ALL)
 
 set(MY_TEST_NAMES "")
 list(APPEND MY_TEST_NAMES "testRenderTargets")
+list(APPEND MY_TEST_NAMES "testgui")
 
   foreach(MY_TEST_NAME ${MY_TEST_NAMES})
     # build test executable and link project library
     add_executable(${MY_TEST_NAME} ${MY_TEST_NAME}.cpp testasserts.hpp)
     target_link_libraries(${MY_TEST_NAME} PUBLIC ${PROJECT_ROOT_NAME})
-    
-    message("${PROJECT_ROOT}/include")
+
     # Add to test framework, so test can be built with `make myTests`
     add_dependencies(${TEST_BUILD_TARGET} ${MY_TEST_NAME})
     add_test(NAME ${MY_TEST_NAME} COMMAND ${MY_TEST_NAME})

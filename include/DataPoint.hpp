@@ -1,6 +1,9 @@
 #ifndef GROUPMPROJECT_DATAPOINT_HPP
 #define GROUPMPROJECT_DATAPOINT_HPP
 
+#include <Body.hpp>
+
+
 /**
  * @brief stripped-down version of Body object to save data on disc efficiently
  *
@@ -23,5 +26,34 @@ struct DataPoint{
     long double vy;
     long double ax;
     long double ay;
+
+
+    DataPoint(Body body) 
+    {
+        size = body.getSize();
+        weight = body.getWeight();
+        x = body.getPos().x;
+        y = body.getPos().y;
+        vx = body.getVel().x;
+        vy = body.getVel().y;
+        ax = body.getAcc().x;
+        ay = body.getAcc().y;
+    }
+
+    DataPoint() {}
+
+    DataPoint(
+        int in_weight,
+        int in_size,
+        long double in_x,
+        long double in_y,
+        long double in_vx,
+        long double in_vy,
+        long double in_ax,
+        long double in_ay
+    )
+    : weight(in_weight), size(in_size), x(in_x), y(in_y), vx(in_vx), vy(in_vy), ax(in_ax), ay(in_ay) {}
+    
 };
+
 #endif //GROUPMPROJECT_DATAPOINT_HPP

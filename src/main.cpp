@@ -7,6 +7,7 @@
 # include "Body.hpp"
 # include "GeneralParameters.hpp"
 # include "DataPoint.hpp"
+# include "gui.hpp"
 
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -24,6 +25,7 @@
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
 int main(){
+
     std::vector<Body> currentStateOfBodies;    ///< this vector contains the current state of all our bodies
     std::vector<std::vector<DataPoint>> stateOfDataPointsOverTime; ///< contains a stripped-down copy of currentStateOfBodies for each timestep
     GeneralParameters generalParameters{};
@@ -43,13 +45,16 @@ int main(){
     Vector2D initialPos2(0, 5);
     Vector2D nullVector(0, 0);
 
-    InputHandler inputHandler(&currentStateOfBodies);
+    InputHandler inputHandler(currentStateOfBodies);
     inputHandler.addToStateOfBodies(6e3, 1, initialPos1, nullVector, nullVector);
     inputHandler.addToStateOfBodies(6e3, 1, initialPos2, nullVector, nullVector);
 
-
-    Simulation simulation(&currentStateOfBodies, &stateOfDataPointsOverTime, &generalParameters);
+    Simulation simulation(currentStateOfBodies, stateOfDataPointsOverTime, generalParameters);
     simulation.runSimulation();
+
+
+    // GravityGUI gui(600, 600);
+    // gui.renderFromFile(stateOfDataPointsOverTime);
 
     return 0;
 }
