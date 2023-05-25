@@ -62,14 +62,16 @@ void Simulation::runSimulation() {
             dataPoint.ay = newBody.getAcc().y;
             currentStateOfDataPoints.push_back(dataPoint);
 
-            std::cout << "Body at (" << newPos.x << ", " << newPos.y << ") [AU]: \n"
-                        << "\tcurrent force: " << totalForce.y << " N\n"
-                        << "\tcurrent velocity: " << newVel.y << " m/s\n"<< std::endl;
+            // std::cout << "Body at (" << newPos.x << ", " << newPos.y << ") [AU]: \n"
+            //             << "\tcurrent force: " << totalForce.y << " N\n"
+            //             << "\tcurrent velocity: " << newVel.y << " m/s\n"<< std::endl;
         }
         // we might not want to save to memory on this particular iteration, but if we do, update the StateOfBodiesOverTime vector
         if (i % generalParameters.saveOnEveryXthStep == 0) {
-            updateStateOfBodiesOverTime(currentStateOfDataPoints);
+            stateOfBodiesOverTime.push_back(currentStateOfDataPoints);
         }
+
+
         // overwrite the current state with the new state, and clear the new state
         currentStateOfBodies.assign(newStateOfBodies.begin(), newStateOfBodies.end());
         newStateOfBodies.clear();
@@ -113,7 +115,3 @@ Vector2D Simulation::getForceByNaiveAlgorithm(std::vector<Body>, std::vector<Bod
     }
 
 }
-
-void Simulation::updateStateOfBodiesOverTime(std::vector<DataPoint> currentStateOfDataPoints) {
-    stateOfBodiesOverTime.push_back(currentStateOfDataPoints);
-};

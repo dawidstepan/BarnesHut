@@ -7,13 +7,12 @@
 # include "Body.hpp"
 # include "GeneralParameters.hpp"
 # include "DataPoint.hpp"
-# include "gui.hpp"
 
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 // * * * * * * * * * * * * * * To Do-Liste * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-// @todo try adding SFML to the conanfile.txt and see if it works
+// @todo try adding SFML to the conanfile.txt and see if it works (v)
 // @todo implement parseFile in InputHandler
 // @todo implement BarnesHut algorithm to calculate force
 // @todo implement basic collision detection for naive algorithm
@@ -32,7 +31,7 @@ int main(){
 
     generalParameters.dt = 3600;   //dt in seconds
     generalParameters.theta = 1;
-    generalParameters.totalNumberOfSteps=100;
+    generalParameters.totalNumberOfSteps=1000;
     generalParameters.saveOnEveryXthStep=1;
     generalParameters.algorithmToUse=0;
 
@@ -41,20 +40,26 @@ int main(){
      * x- & y coordinates in astronomical Units,
      * weight in sun masses
      */
-    Vector2D initialPos1(0, -5);
-    Vector2D initialPos2(0, 5);
-    Vector2D nullVector(0, 0);
 
     InputHandler inputHandler(currentStateOfBodies);
-    inputHandler.addToStateOfBodies(6e3, 1, initialPos1, nullVector, nullVector);
-    inputHandler.addToStateOfBodies(6e3, 1, initialPos2, nullVector, nullVector);
+
+    // Manual creation of StateOfBodies:
+    // Vector2D initialPos1(0, 7);
+    // Vector2D initialPos2(0, 5);
+    // Vector2D nullVector(0, 0);
+    // inputHandler.addToStateOfBodies(6e3, 1, initialPos1, nullVector, nullVector);
+    // inputHandler.addToStateOfBodies(6e3, 1, initialPos2, nullVector, nullVector);
+    
+    // Automatic creation of randomly distributed particles:
+    inputHandler.fillStateOfBodiesRandomly(100);
 
     Simulation simulation(currentStateOfBodies, stateOfDataPointsOverTime, generalParameters);
     simulation.runSimulation();
 
-
-    // GravityGUI gui(600, 600);
-    // gui.renderFromFile(stateOfDataPointsOverTime);
+    GravityGUI gui(600);
+    
+    // gui.renderSnapshot(stateOfDataPointsOverTime[0]);
+    gui.renderTrajectory(stateOfDataPointsOverTime);
 
     return 0;
 }

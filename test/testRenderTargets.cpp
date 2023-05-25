@@ -14,7 +14,8 @@ int main()
     inputHandler.addToStateOfBodies(6e3, 1, initialPos1, nullVector, nullVector);
     inputHandler.addToStateOfBodies(6e3, 1, initialPos2, nullVector, nullVector);
 
-    auto state = StateOfCircles(&currentStateOfBodies, {});
+    // auto state = StateOfCircles<Identity>(stateOfDataPointsOverTime[0], 100.f, Identity());
+    // auto state = StateOfCircles(currentStateOfBodies, 100.f);
 
     // auto stateOfBodies2 = create_stateOfBodies(9);
     // state.update_state(stateOfBodies2);

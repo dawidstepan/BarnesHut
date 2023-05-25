@@ -28,17 +28,15 @@ public:
     // void runSimulation(GravityGUI &GUI);
 
 private:
-    void updateStateOfBodiesOverTime(std::vector<DataPoint> currentStateOfDataPoints);
-
     /// the most basic approach to calculating the force between the objects
     Vector2D getForceByNaiveAlgorithm(std::vector<Body>, std::vector<Body>::iterator iteratorToBody);
 
     /// more sophisticated way of approximating the force
     Vector2D getForceByBarnesHutAlgorithm(std::vector<Body>, std::vector<Body>::iterator iteratorToBody);
 
-    std::vector<Body>  currentStateOfBodies;
-    std::vector<std::vector<DataPoint>> stateOfBodiesOverTime;
-    const GeneralParameters generalParameters;
+    std::vector<Body> &currentStateOfBodies;
+    std::vector<std::vector<DataPoint>> &stateOfBodiesOverTime;
+    const GeneralParameters &generalParameters;
 };
 
 
