@@ -5,6 +5,7 @@
 #include "Body.hpp"
 #include "GeneralParameters.hpp"
 #include "DataPoint.hpp"
+#include "gui.hpp"
 
 /**
  * includes the core functionality of our program.
@@ -14,9 +15,9 @@
  */
 class Simulation {
 public:
-    Simulation(std::vector<Body> *currentStateOfBodies,
-               std::vector<std::vector<DataPoint>> *stateOfBodiesOverTime,
-               const GeneralParameters *generalParameters) :
+    Simulation(std::vector<Body> &currentStateOfBodies,
+               std::vector<std::vector<DataPoint>> &stateOfBodiesOverTime,
+               const GeneralParameters &generalParameters) :
             currentStateOfBodies(currentStateOfBodies),
             stateOfBodiesOverTime(stateOfBodiesOverTime),
             generalParameters(generalParameters) {};
@@ -24,21 +25,18 @@ public:
 
     ///executes the Simulation
     void runSimulation();
+    // void runSimulation(GravityGUI &GUI);
 
 private:
-    void updateStateOfBodiesOverTime(std::vector<DataPoint> currentStateOfDataPoints);
-
     /// the most basic approach to calculating the force between the objects
-    Vector2D getForceByNaiveAlgorithm(std::vector<Body>*, std::vector<Body>::iterator iteratorToBody);
+    Vector2D getForceByNaiveAlgorithm(std::vector<Body>, std::vector<Body>::iterator iteratorToBody);
 
     /// more sophisticated way of approximating the force
-    Vector2D getForceByBarnesHutAlgorithm(std::vector<Body>*, std::vector<Body>::iterator iteratorToBody);
+    Vector2D getForceByBarnesHutAlgorithm(std::vector<Body>, std::vector<Body>::iterator iteratorToBody);
 
-    
-
-    std::vector<Body> *currentStateOfBodies;
-    std::vector<std::vector<DataPoint>> *stateOfBodiesOverTime;
-    const GeneralParameters *generalParameters;
+    std::vector<Body> &currentStateOfBodies;
+    std::vector<std::vector<DataPoint>> &stateOfBodiesOverTime;
+    const GeneralParameters &generalParameters;
 };
 
 

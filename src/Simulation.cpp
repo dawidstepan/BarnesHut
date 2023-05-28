@@ -3,22 +3,11 @@
 #include "EulerIntegrator.hpp"
 #include "VerletIntegrator.hpp"
 #include "Units.hpp"
+#include "gui.hpp"
+#include "RenderTargets.hpp"
 #include <memory>
 
-void Simulation::runSimulation()
-{
-    // this line creates a special pointer to a member function of the Simulation class
-    Vector2D (Simulation::*getForce)(std::vector<Body> *, std::vector<Body>::iterator iteratorToBody);
-    // depending on the user input, that is stored in generalParameters, this member pointer will point to a different function
-    switch (generalParameters->algorithmToUse)
-    {
-    case 0: // this means we will use the simplest, brute-force-ish approach to calculate the force
-        getForce = &Simulation::getForceByNaiveAlgorithm;
-        break;
-    case 1: // this means we will use the more sophisticated Barnes-Hut algorithm to approximate the force
-        getForce = &Simulation::getForceByBarnesHutAlgorithm;
-        break;
-    }
+void Simulation::runSimulation() {
 
     // this line creates pointer with the Interface class as type
     std::unique_ptr<Integrator> useIntegrator;
@@ -37,14 +26,21 @@ void Simulation::runSimulation()
     std::vector<Body> newStateOfBodies;              // describes how currentStateOfBodies will look after the next time step
     std::vector<DataPoint> currentStateOfDataPoints; // this is how we are going to save the data on our disc
 
-    // loop over all time steps
-    for (int i = 0; i < generalParameters->totalNumberOfSteps; i++)
-    {
+    //loop over all time steps
+    for (int i=0; i < generalParameters.totalNumberOfSteps; i++){
         // now this will loop over all bodies, update their states and save them in newStateOfBodies
-        for (auto iteratorToBody = currentStateOfBodies->begin(); iteratorToBody != currentStateOfBodies->end(); ++iteratorToBody)
-        {
+        for (auto iteratorToBody = currentStateOfBodies.begin(); iteratorToBody != currentStateOfBodies.end(); ++iteratorToBody) {
             // calculating the total force with the algorithm the 'getForce' pointer is set to
-            Vector2D totalForce = ((*this).*(getForce))(currentStateOfBodies, iteratorToBody);
+
+            Vector2D totalForce;
+            switch (generalParameters.algorithmToUse){
+                case 0: //this means we will use the simplest, brute-force-ish approach to calculate the force
+                    totalForce = getForceByNaiveAlgorithm(currentStateOfBodies, iteratorToBody);
+                    break;
+                case 1: //this means we will use the more sophisticated Barnes-Hut algorithm to approximate the force
+                    totalForce = getForceByBarnesHutAlgorithm(currentStateOfBodies, iteratorToBody);
+                    break;
+            }
 
             // dereferencing the iterator just for convenience
             Body newBody = *iteratorToBody;
@@ -77,40 +73,37 @@ void Simulation::runSimulation()
             dataPoint.ay = newBody.getAcc().y;
             currentStateOfDataPoints.push_back(dataPoint);
 
-            std::cout << "Body at (" << newPos.x << ", " << newPos.y << ") [AU]: \n"
-                      << "\tcurrent force: " << totalForce.y << " N\n"
-                      << "\tcurrent velocity: " << newVel.y << " m/s\n"
-                      << std::endl;
+            // std::cout << "Body at (" << newPos.x << ", " << newPos.y << ") [AU]: \n"
+            //             << "\tcurrent force: " << totalForce.y << " N\n"
+            //             << "\tcurrent velocity: " << newVel.y << " m/s\n"<< std::endl;
         }
         // we might not want to save to memory on this particular iteration, but if we do, update the StateOfBodiesOverTime vector
-        if (i % generalParameters->saveOnEveryXthStep == 0)
-        {
-            updateStateOfBodiesOverTime(currentStateOfDataPoints);
+        if (i % generalParameters.saveOnEveryXthStep == 0) {
+            stateOfBodiesOverTime.push_back(currentStateOfDataPoints);
         }
+
+
         // overwrite the current state with the new state, and clear the new state
-        currentStateOfBodies->assign(newStateOfBodies.begin(), newStateOfBodies.end());
+        currentStateOfBodies.assign(newStateOfBodies.begin(), newStateOfBodies.end());
         newStateOfBodies.clear();
+        currentStateOfDataPoints.clear();
     }
 }
 
 // * * * * * * * * * * * * * *
 // *  yet to be implemented! *
 // * * * * * * * * * * * * * *
-Vector2D Simulation::getForceByBarnesHutAlgorithm(std::vector<Body> *, std::vector<Body>::iterator iteratorToBody)
-{
+Vector2D Simulation::getForceByBarnesHutAlgorithm(std::vector<Body>, std::vector<Body>::iterator iteratorToBody){
     std::cout << "this is the barnes hut algorithm lul" << std::endl;
 }
 
 /// the most basic approach to calculating the force between the objects
-Vector2D Simulation::getForceByNaiveAlgorithm(std::vector<Body> *, std::vector<Body>::iterator iteratorToBody)
-{
+Vector2D Simulation::getForceByNaiveAlgorithm(std::vector<Body>, std::vector<Body>::iterator iteratorToBody) {
     Vector2D totalForce(0, 0);
-    for (auto iteratorToOtherBody = currentStateOfBodies->begin(); iteratorToOtherBody != currentStateOfBodies->end(); ++iteratorToOtherBody)
-    {
-        // check if we aren't comparing the same bodies with each other
-        if (iteratorToBody != iteratorToOtherBody)
-        {
-            // getting relevant data
+    for (auto iteratorToOtherBody = currentStateOfBodies.begin(); iteratorToOtherBody != currentStateOfBodies.end(); ++iteratorToOtherBody){
+        //check if we aren't comparing the same bodies with each other
+        if (iteratorToBody != iteratorToOtherBody) {
+            //getting relevant data
             Vector2D pos1 = iteratorToBody->getPos();
             Vector2D pos2 = iteratorToOtherBody->getPos();
             long double m1 = iteratorToBody->getWeight();
@@ -130,8 +123,3 @@ Vector2D Simulation::getForceByNaiveAlgorithm(std::vector<Body> *, std::vector<B
         }
     }
 }
-
-void Simulation::updateStateOfBodiesOverTime(std::vector<DataPoint> currentStateOfDataPoints)
-{
-    stateOfBodiesOverTime->push_back(currentStateOfDataPoints);
-};

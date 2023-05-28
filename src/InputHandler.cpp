@@ -7,13 +7,13 @@
 
 void InputHandler::addToStateOfBodies(int size, double weight, Vector2D pos, Vector2D vel, Vector2D acc) {
     Body newBody(size, weight, pos, vel, acc);
-    stateOfBodies -> push_back(newBody);
+    stateOfBodies.push_back(newBody);
 }
 
 // yet to be implemented
 void InputHandler::parseFile() {}
 
-void InputHandler::fillStateOdBodiesRandomly(int n, int size, double weight) {
+void InputHandler::fillStateOfBodiesRandomly(int n, int size, double weight) {
     // Set seed value based on current time
     std::srand(static_cast<unsigned int>(std::time(nullptr)));
 

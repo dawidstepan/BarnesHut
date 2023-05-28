@@ -12,7 +12,7 @@
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 // * * * * * * * * * * * * * * To Do-Liste * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-// @todo try adding SFML to the conanfile.txt and see if it works
+// @todo try adding SFML to the conanfile.txt and see if it works (v)
 // @todo implement parseFile in InputHandler
 // @todo implement BarnesHut algorithm to calculate force
 // @todo implement basic collision detection for naive algorithm
@@ -24,13 +24,14 @@
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
 int main(){
+
     std::vector<Body> currentStateOfBodies;    ///< this vector contains the current state of all our bodies
     std::vector<std::vector<DataPoint>> stateOfDataPointsOverTime; ///< contains a stripped-down copy of currentStateOfBodies for each timestep
     GeneralParameters generalParameters{};
 
     generalParameters.dt = 36000;   //dt in seconds
     generalParameters.theta = 1;
-    generalParameters.totalNumberOfSteps=2000;
+    generalParameters.totalNumberOfSteps=1000;
     generalParameters.saveOnEveryXthStep=1;
     generalParameters.algorithmToUse=0;
     generalParameters.IntegratorToUse=0;
@@ -44,13 +45,23 @@ int main(){
     Vector2D initialPos2(0, 1);
     Vector2D nullVector(0, 0);
 
-    InputHandler inputHandler(&currentStateOfBodies);
-    inputHandler.addToStateOfBodies(6e3, 1, initialPos1, nullVector, nullVector);
-    inputHandler.addToStateOfBodies(6e3, 1, initialPos2, nullVector, nullVector);
+    // Manual creation of StateOfBodies:
+    // Vector2D initialPos1(0, 7);
+    // Vector2D initialPos2(0, 5);
+    // Vector2D nullVector(0, 0);
+    // inputHandler.addToStateOfBodies(6e3, 1, initialPos1, nullVector, nullVector);
+    // inputHandler.addToStateOfBodies(6e3, 1, initialPos2, nullVector, nullVector);
+    
+    // Automatic creation of randomly distributed particles:
+    inputHandler.fillStateOfBodiesRandomly(100);
 
-
-    Simulation simulation(&currentStateOfBodies, &stateOfDataPointsOverTime, &generalParameters);
+    Simulation simulation(currentStateOfBodies, stateOfDataPointsOverTime, generalParameters);
     simulation.runSimulation();
+
+    GravityGUI gui(600);
+    
+    // gui.renderSnapshot(stateOfDataPointsOverTime[0]);
+    gui.renderTrajectory(stateOfDataPointsOverTime);
 
     return 0;
 }
