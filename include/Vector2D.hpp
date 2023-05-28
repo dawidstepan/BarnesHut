@@ -52,6 +52,12 @@ public:
         res.y = y*d;
         return res;
     }
+    Vector2D operator*(Vector2D d){
+        Vector2D res;
+        res.x = x*d.x;
+        res.y = y*d.y;
+        return res;
+    }
     long double x;
     long double y;
 };

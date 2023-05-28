@@ -34,6 +34,8 @@ private:
     /// more sophisticated way of approximating the force
     Vector2D getForceByBarnesHutAlgorithm(std::vector<Body>*, std::vector<Body>::iterator iteratorToBody);
 
+    
+
     std::vector<Body> *currentStateOfBodies;
     std::vector<std::vector<DataPoint>> *stateOfBodiesOverTime;
     const GeneralParameters *generalParameters;

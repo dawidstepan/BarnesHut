@@ -28,19 +28,20 @@ int main(){
     std::vector<std::vector<DataPoint>> stateOfDataPointsOverTime; ///< contains a stripped-down copy of currentStateOfBodies for each timestep
     GeneralParameters generalParameters{};
 
-    generalParameters.dt = 3600;   //dt in seconds
+    generalParameters.dt = 36000;   //dt in seconds
     generalParameters.theta = 1;
-    generalParameters.totalNumberOfSteps=100;
+    generalParameters.totalNumberOfSteps=2000;
     generalParameters.saveOnEveryXthStep=1;
     generalParameters.algorithmToUse=0;
+    generalParameters.IntegratorToUse=0;
 
     // random sample code to show some functions in action
     /*
      * x- & y coordinates in astronomical Units,
      * weight in sun masses
      */
-    Vector2D initialPos1(0, -5);
-    Vector2D initialPos2(0, 5);
+    Vector2D initialPos1(0, -1);
+    Vector2D initialPos2(0, 1);
     Vector2D nullVector(0, 0);
 
     InputHandler inputHandler(&currentStateOfBodies);
