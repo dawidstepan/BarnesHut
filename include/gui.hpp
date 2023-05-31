@@ -13,8 +13,7 @@ struct GravityGUI {
 private:
     sf::RenderWindow window;
     std::unique_ptr<Transformation> transformation;
-    sf::Font font;
-    sf::Text text;
+    int print_fps_every;
 
 public:
     /************************************************
@@ -33,7 +32,8 @@ public:
      *              
      ***********************************************/
     GravityGUI(int width, std::string transform = "Rescale", 
-               std::vector<float> range = {0.f, 10.f});
+               std::vector<float> range = {0.f, 10.f},
+               int print_fps_every = 10);
 
     /************************************************
      * Method to run an animation from a trajectory of a gravity simulation.
@@ -54,22 +54,4 @@ public:
     void print_fps(float frames_per_second);
 
     void init_progressbar();
-};
-
-
-
-struct ProgressBar {
-
-private:
-    sf::RectangleShape outer_hull;
-    sf::RectangleShape progress_bar;
-    float bar_width;
-    float bar_height;
-
-public:
-
-    ProgressBar(sf::RenderWindow &window);
-
-    // sf::RectangleShape draw(float progress);
-    void draw(sf::RenderWindow &window, float progress);
 };

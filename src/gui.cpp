@@ -1,5 +1,6 @@
 #include <gui.hpp>
 #include <RenderTargets.hpp>
+#include <Widgets.hpp>
 
 #include <SFML/Graphics.hpp>
 #include <iostream>
@@ -10,12 +11,11 @@
 #include <cmath>
 
 
-GravityGUI::GravityGUI(int width, std::string transform, std::vector<float> range)
-: window(sf::VideoMode(width, width), "Gravity Simulator") 
+GravityGUI::GravityGUI(int width, std::string transform, std::vector<float> range, 
+                       int print_fps_every)
+: window(sf::VideoMode(width, width), "Gravity Simulator"), print_fps_every(print_fps_every)
 {   
-    window.setFramerateLimit(60);
-
-    init_text();
+    // window.setFramerateLimit(5);
 
     if (transform == "Rescale") 
     {
@@ -31,21 +31,6 @@ GravityGUI::GravityGUI(int width, std::string transform, std::vector<float> rang
     }
 };
 
-void GravityGUI::init_text()
-{
-    font.loadFromFile("../assets/DejaVuSerif.ttf");
-    text.setFont(font);
-    text.setCharacterSize(24);
-    text.setFillColor(sf::Color::Red);
-    text.setPosition(sf::Vector2f(10.f, 10.f));
-}
-
-void GravityGUI::print_fps(float frames_per_second)
-{  
-    std::string str = "FPS: " + std::to_string(frames_per_second);
-    text.setString(str);
-    window.draw(text);
-}
 
 void GravityGUI::renderTrajectory
 (
@@ -55,36 +40,55 @@ void GravityGUI::renderTrajectory
     sf::Clock clock;
     
     ProgressBar progressbar(window);
-    auto state = StateOfCircles(stateOfDataPointsOverTime[0], std::move(transformation), 10.f);
-    auto total_frame_number = stateOfDataPointsOverTime.size();
+    FPSDisplay fps_display(window);
+    auto pause_pos = sf::Vector2f(0.7 * window.getSize().x, 0.1 * window.getSize().y);
+    Button pauseButton(pause_pos, "Resume", "Pause", window);
 
+    auto state = StateOfCircles(stateOfDataPointsOverTime[0], std::move(transformation), 2.f);
+    auto total_frame_number = stateOfDataPointsOverTime.size();
+    
+    bool paused = false;
     int frame_index = 0;
+    float time_fps = 0;
+    float print_fps = 0;
     while (window.isOpen()) 
     {
-        sf::Event event;
-        while (window.pollEvent(event))
-        {
-            if (event.type == sf::Event::Closed)
-                window.close();
-        }
 
         for (auto time_step : stateOfDataPointsOverTime) 
-        {
-            state.update_state_from_data_points(time_step, false);
+        {   
+            // Draw a Pause button which upon clicking pauses the animation
             window.clear();
+            pauseButton.draw();
+            state.update_state_from_data_points(time_step, false);
             for (auto target : state.state) {
                 window.draw(target);
             }
             sf::Time time = clock.getElapsedTime();
-
             clock.restart().asSeconds();
 
-            print_fps(1.f / time.asSeconds());
+            // Draw the FPS averaged over the last print_fps_every iterations
+            time_fps += time.asSeconds();
+            if (frame_index % print_fps_every == 0)
+            {
+                print_fps = static_cast<int>(1.f * print_fps_every / time_fps);
+                time_fps = 0;
+            }
+            fps_display.draw(print_fps);
+
+            // Draw a progress bar showing the progress of the animation
             float progress = static_cast<float>(frame_index) / total_frame_number;
-            progressbar.draw(window, std::fmod(progress, 1.f));
+            progressbar.draw(std::fmod(progress, 1.f));
 
             window.display();
             frame_index++;
+
+            sf::Event event;
+            while (window.pollEvent(event))
+            {
+                if (event.type == sf::Event::Closed)
+                    window.close();
+                pauseButton.handleEvent(event);
+            }
         }
 
     }
@@ -116,74 +120,3 @@ void GravityGUI::renderSnapshot(std::vector<DataPoint> &stateOfDataPoints) {
     
     }
 }
-
-
-ProgressBar::ProgressBar(sf::RenderWindow &window)
-{   
-    bar_width = 0.8 * window.getSize().x;
-    bar_height = 10.f;
-    sf::Vector2f barsize(bar_width, bar_height);
-    outer_hull.setSize(barsize);
-    outer_hull.setFillColor(sf::Color::White);
-    outer_hull.setOutlineColor(sf::Color::Blue);
-    outer_hull.setOutlineThickness(2.f);
-    auto outer_pos = sf::Vector2f(0.1 * window.getSize().x, 0.9 * window.getSize().y);
-    outer_hull.setPosition(outer_pos);
-
-    progress_bar.setPosition(outer_pos);
-    progress_bar.setFillColor(sf::Color::Blue);
-}
-
-void ProgressBar::draw(sf::RenderWindow &window, float progress)
-{   
-    progress_bar.setSize(sf::Vector2f(progress * bar_width, bar_height));
-    window.draw(outer_hull);
-    window.draw(progress_bar);
-}
-
-
-// void GravityGUI::renderFromFile
-// (
-//     std::vector<std::vector<DataPoint>>& stateOfDataPointsOverTime
-// )
-// {
-//     sf::Clock clock;
-//     sf::Time timeSinceLastFrame = sf::Time::Zero;
-//     const sf::Time TIME_PER_FRAME = sf::seconds(1.f);
-
-//     auto transform = Rescale(0, 10, 0, window.getSize().x);
-//     auto state = StateOfCircles<Rescale>(stateOfDataPointsOverTime[0], transform);
-
-//     // Track the current index of the stateOfDataPointsOverTime vector
-//     std::size_t currentIndex = 0;
-
-//     while (window.isOpen())
-//     {
-//         sf::Event event;
-//         while (window.pollEvent(event))
-//         {
-//             if (event.type == sf::Event::Closed)
-//                 window.close();
-//         }
-
-//         timeSinceLastFrame += clock.restart();
-
-//         if (currentIndex < stateOfDataPointsOverTime.size())
-//         {
-//             // Update the state and render the current data points
-//             state.update_state_from_data_points(stateOfDataPointsOverTime[currentIndex], false);
-//             window.clear();
-//             for (const auto& target : state.state) {
-//                 window.draw(target);
-//             }
-//             window.display();
-
-//             if (timeSinceLastFrame >= TIME_PER_FRAME)
-//             {
-//                 // Move to the next data points after a certain time
-//                 timeSinceLastFrame -= TIME_PER_FRAME;
-//                 currentIndex++;
-//             }
-//         }
-//     }
-// }
