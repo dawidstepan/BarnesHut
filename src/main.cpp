@@ -31,7 +31,7 @@ int main(){
 
     generalParameters.dt = 3600;   //dt in seconds
     generalParameters.theta = 1;
-    generalParameters.totalNumberOfSteps=1000;
+    generalParameters.totalNumberOfSteps=2000;
     generalParameters.saveOnEveryXthStep=1;
     generalParameters.algorithmToUse=0;
 
@@ -53,9 +53,9 @@ int main(){
     // Automatic creation of randomly distributed particles:
     // Nico: this does not work with weights smaller than 1 (e.g. 0.5). 
     // Does anyone have an idea why??
-    inputHandler.fillStateOfBodiesRandomly(100, 696340, 10., -5, 0.1);
+    inputHandler.fillStateOfBodiesRandomly(500, 696340, 10., -5, 0.1);
 
-    inputHandler.fillStateOfBodiesRandomly(100, 696340, 10., 5, 0.3);
+    inputHandler.fillStateOfBodiesRandomly(500, 696340, 10., 5, 0.3);
 
     Simulation simulation(currentStateOfBodies, stateOfDataPointsOverTime, generalParameters);
     simulation.runSimulation();

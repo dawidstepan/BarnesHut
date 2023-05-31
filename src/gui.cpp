@@ -15,7 +15,7 @@ GravityGUI::GravityGUI(int width, std::string transform, std::vector<float> rang
                        int print_fps_every)
 : window(sf::VideoMode(width, width), "Gravity Simulator"), print_fps_every(print_fps_every)
 {   
-    // window.setFramerateLimit(5);
+    // window.setFramerateLimit(60);
 
     if (transform == "Rescale") 
     {
@@ -51,44 +51,62 @@ void GravityGUI::renderTrajectory
     int frame_index = 0;
     float time_fps = 0;
     float print_fps = 0;
+    auto it = stateOfDataPointsOverTime.begin();
+    auto end = stateOfDataPointsOverTime.end();
     while (window.isOpen()) 
-    {
+    {   
 
-        for (auto time_step : stateOfDataPointsOverTime) 
-        {   
-            // Draw a Pause button which upon clicking pauses the animation
-            window.clear();
+        while (true) {
             pauseButton.draw();
-            state.update_state_from_data_points(time_step, false);
-            for (auto target : state.state) {
-                window.draw(target);
+            while (true) {
+                if (it == end)
+                    it = stateOfDataPointsOverTime.begin();
+                auto time_step = *it;
+                // Draw a Pause button which upon clicking pauses the animation
+                window.clear();
+                pauseButton.draw();
+                state.update_state_from_data_points(time_step, false);
+                for (auto target : state.state) {
+                    window.draw(target);
+                }
+                sf::Time time = clock.getElapsedTime();
+                clock.restart().asSeconds();
+
+                // Draw the FPS averaged over the last print_fps_every iterations
+                time_fps += time.asSeconds();
+                if (frame_index % print_fps_every == 0)
+                {
+                    print_fps = static_cast<int>(1.f * print_fps_every / time_fps);
+                    time_fps = 0;
+                }
+                fps_display.draw(print_fps);
+
+
+
+                float progress;
+                if (!pauseButton.isPressed())
+                {
+                    // Draw a progress bar showing the progress of the animation
+                    progress = static_cast<float>(frame_index) / total_frame_number;
+                    it++;
+                    frame_index++;
+                }
+
+                progressbar.draw(std::fmod(progress, 1.f));
+                
+                window.display();
+
+                sf::Event event;
+                while (window.pollEvent(event))
+                {
+                    if (event.type == sf::Event::Closed)
+                        {
+                            window.close();
+                        }
+                    pauseButton.handleEvent(event);
+                }
             }
-            sf::Time time = clock.getElapsedTime();
-            clock.restart().asSeconds();
 
-            // Draw the FPS averaged over the last print_fps_every iterations
-            time_fps += time.asSeconds();
-            if (frame_index % print_fps_every == 0)
-            {
-                print_fps = static_cast<int>(1.f * print_fps_every / time_fps);
-                time_fps = 0;
-            }
-            fps_display.draw(print_fps);
-
-            // Draw a progress bar showing the progress of the animation
-            float progress = static_cast<float>(frame_index) / total_frame_number;
-            progressbar.draw(std::fmod(progress, 1.f));
-
-            window.display();
-            frame_index++;
-
-            sf::Event event;
-            while (window.pollEvent(event))
-            {
-                if (event.type == sf::Event::Closed)
-                    window.close();
-                pauseButton.handleEvent(event);
-            }
         }
 
     }
