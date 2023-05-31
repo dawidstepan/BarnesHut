@@ -56,7 +56,7 @@ int main(){
     Simulation simulation(currentStateOfBodies, stateOfDataPointsOverTime, generalParameters);
     simulation.runSimulation();
 
-    GravityGUI gui(600);
+    GravityGUI gui(600, "sadasdd", {-10.f, 10.f});
     
     // gui.renderSnapshot(stateOfDataPointsOverTime[0]);
     gui.renderTrajectory(stateOfDataPointsOverTime);

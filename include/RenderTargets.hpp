@@ -8,6 +8,7 @@
 
 #include <SFML/Graphics.hpp>
 #include <vector>
+#include <memory>
 
 /************************************************
  * ABC for transformations of a single value.
@@ -57,12 +58,11 @@ private:
  * This works so far for a single snapshot, but fails for a "trajectory" of 
  * snapshots, which should be the final goal to create an animation..
  ***********************************************/
-template <typename Transform>
 struct StateOfCircles {
 
 public:
     std::vector<sf::CircleShape> state;
-    Transform transform;
+    std::unique_ptr<Transformation> transform;
 
     // StateOfCircles
     // (
@@ -78,7 +78,7 @@ public:
     StateOfCircles
     (
         std::vector<DataPoint> &stateOfDataPoints, 
-        Transform transform,
+        std::unique_ptr<Transformation> trafo,
         float circleRadius = 10.f
     );
     

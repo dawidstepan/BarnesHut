@@ -1,7 +1,8 @@
 #pragma once
 
 #include <SFML/Graphics.hpp>
-# include "DataPoint.hpp"
+#include "DataPoint.hpp"
+#include "RenderTargets.hpp"
 
 
 /************************************************
@@ -9,10 +10,15 @@
  ***********************************************/
 struct GravityGUI {
 
-public:
+private:
     sf::RenderWindow window;
+    std::unique_ptr<Transformation> transformation;
 
-    GravityGUI(int width);
+
+public:
+    
+    GravityGUI(int width, std::string transform = "Rescale", 
+               std::vector<float> range = {0.f, 10.f});
 
     /************************************************
      * Method to run an animation from a trajectory of a gravity simulation.

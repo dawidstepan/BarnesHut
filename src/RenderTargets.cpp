@@ -40,13 +40,12 @@ float Rescale::apply(float value) {
 //     }
 // }
 
-template <typename Transform>
-StateOfCircles<Transform>::StateOfCircles
+StateOfCircles::StateOfCircles
 (
     std::vector<DataPoint> &stateOfDataPoints, 
-    Transform transform,
+    std::unique_ptr<Transformation> trafo,
     float circleRadius
-) : transform(transform)
+) : transform(std::move(trafo))
 {
     // Setup initial list of pointers to circle objects in state
     for (auto it = stateOfDataPoints.begin(); it != stateOfDataPoints.end(); ++it)
@@ -54,8 +53,8 @@ StateOfCircles<Transform>::StateOfCircles
         auto circle = sf::CircleShape(circleRadius);
         circle.setFillColor(sf::Color::Green);
         circle.setPosition(
-            transform.apply(it->x), 
-            transform.apply(it->y)
+            transform->apply(it->x), 
+            transform->apply(it->y)
         );
         state.push_back(circle);
     }
@@ -96,8 +95,7 @@ StateOfCircles<Transform>::StateOfCircles
 //     }
 // }
 
-template <typename Transform>
-void StateOfCircles<Transform>::update_state_from_data_points
+void StateOfCircles::update_state_from_data_points
 (
     std::vector<DataPoint> &stateOfDataPoints, 
     bool showVelocity
@@ -116,8 +114,8 @@ void StateOfCircles<Transform>::update_state_from_data_points
     for (int i = 0; i < body_size; i++) {
         auto point = stateOfDataPoints[i];
         state[i].setPosition(
-            transform.apply(point.x), 
-            transform.apply(point.y)
+            transform->apply(point.x), 
+            transform->apply(point.y)
         );
 
         if (showVelocity) {
@@ -130,6 +128,3 @@ void StateOfCircles<Transform>::update_state_from_data_points
 
     }
 }
-
-template struct StateOfCircles<Identity>;
-template struct StateOfCircles<Rescale>;

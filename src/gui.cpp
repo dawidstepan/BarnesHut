@@ -3,11 +3,28 @@
 
 #include <SFML/Graphics.hpp>
 #include <iostream>
+#include <memory>
+#include <vector>
 #include <unistd.h>
+#include <stdexcept>
 
 
-GravityGUI::GravityGUI(int width)
-    : window(sf::VideoMode(width, width), "Gravity Simulator") {};
+GravityGUI::GravityGUI(int width, std::string transform, std::vector<float> range)
+: window(sf::VideoMode(width, width), "Gravity Simulator") 
+{
+    if (transform == "Rescale") 
+    {
+        transformation = std::make_unique<Rescale>(range[0], range[1], 0, window.getSize().x);
+    }
+    else if (transform == "Identity")
+    {
+        transformation = std::make_unique<Identity>();
+    }
+    else
+    {
+      throw std::runtime_error("Unknown transformation! Supported are 'Rescale' and 'Identity'");
+    }
+};
 
 void GravityGUI::renderTrajectory
 (
@@ -18,8 +35,7 @@ void GravityGUI::renderTrajectory
     sf::Time timeSinceLastFrame = sf::Time::Zero;
     const sf::Time TIME_PER_FRAME = sf::seconds(1.f / 20.f);
     
-    auto transform = Rescale(0, 10, 0, window.getSize().x);
-    auto state = StateOfCircles<Rescale>(stateOfDataPointsOverTime[0], transform);
+    auto state = StateOfCircles(stateOfDataPointsOverTime[0], std::move(transformation), 10.f);
 
     while (window.isOpen()) 
     {
@@ -51,8 +67,7 @@ void GravityGUI::renderSnapshot(std::vector<DataPoint> &stateOfDataPoints) {
     sf::Time timeSinceLastFrame = sf::Time::Zero;
     const sf::Time TIME_PER_FRAME = sf::seconds(1.f / 20.f);
     
-    auto transform = Rescale(0, 10, 0, window.getSize().x);
-    auto state = StateOfCircles<Rescale>(stateOfDataPoints, transform);
+    auto state = StateOfCircles(stateOfDataPoints, std::move(transformation), 10.f);
 
     while (window.isOpen()) 
     {
