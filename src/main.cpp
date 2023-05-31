@@ -31,7 +31,7 @@ int main(){
 
     generalParameters.dt = 3600;   //dt in seconds
     generalParameters.theta = 1;
-    generalParameters.totalNumberOfSteps=1000;
+    generalParameters.totalNumberOfSteps=2000;
     generalParameters.saveOnEveryXthStep=1;
     generalParameters.algorithmToUse=0;
 
@@ -51,12 +51,16 @@ int main(){
     // inputHandler.addToStateOfBodies(6e3, 1, initialPos2, nullVector, nullVector);
     
     // Automatic creation of randomly distributed particles:
-    inputHandler.fillStateOfBodiesRandomly(100);
+    // Nico: this does not work with weights smaller than 1 (e.g. 0.5). 
+    // Does anyone have an idea why??
+    inputHandler.fillStateOfBodiesRandomly(500, 696340, 10., -5, 0.1);
+
+    inputHandler.fillStateOfBodiesRandomly(500, 696340, 10., 5, 0.3);
 
     Simulation simulation(currentStateOfBodies, stateOfDataPointsOverTime, generalParameters);
     simulation.runSimulation();
 
-    GravityGUI gui(600);
+    GravityGUI gui(600, "Rescale", {-30.f, 60.f});
     
     // gui.renderSnapshot(stateOfDataPointsOverTime[0]);
     gui.renderTrajectory(stateOfDataPointsOverTime);
