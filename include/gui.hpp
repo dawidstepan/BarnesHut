@@ -52,4 +52,24 @@ public:
     void init_text();
 
     void print_fps(float frames_per_second);
+
+    void init_progressbar();
+};
+
+
+
+struct ProgressBar {
+
+private:
+    sf::RectangleShape outer_hull;
+    sf::RectangleShape progress_bar;
+    float bar_width;
+    float bar_height;
+
+public:
+
+    ProgressBar(sf::RenderWindow &window);
+
+    // sf::RectangleShape draw(float progress);
+    void draw(sf::RenderWindow &window, float progress);
 };

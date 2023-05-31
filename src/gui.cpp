@@ -7,6 +7,7 @@
 #include <vector>
 #include <unistd.h>
 #include <stdexcept>
+#include <cmath>
 
 
 GravityGUI::GravityGUI(int width, std::string transform, std::vector<float> range)
@@ -53,8 +54,11 @@ void GravityGUI::renderTrajectory
 {
     sf::Clock clock;
     
+    ProgressBar progressbar(window);
     auto state = StateOfCircles(stateOfDataPointsOverTime[0], std::move(transformation), 10.f);
+    auto total_frame_number = stateOfDataPointsOverTime.size();
 
+    int frame_index = 0;
     while (window.isOpen()) 
     {
         sf::Event event;
@@ -63,7 +67,6 @@ void GravityGUI::renderTrajectory
             if (event.type == sf::Event::Closed)
                 window.close();
         }
-
 
         for (auto time_step : stateOfDataPointsOverTime) 
         {
@@ -76,9 +79,12 @@ void GravityGUI::renderTrajectory
 
             clock.restart().asSeconds();
 
-            print_fps(1.f / time.asSeconds()); 
+            print_fps(1.f / time.asSeconds());
+            float progress = static_cast<float>(frame_index) / total_frame_number;
+            progressbar.draw(window, std::fmod(progress, 1.f));
 
             window.display();
+            frame_index++;
         }
 
     }
@@ -110,6 +116,31 @@ void GravityGUI::renderSnapshot(std::vector<DataPoint> &stateOfDataPoints) {
     
     }
 }
+
+
+ProgressBar::ProgressBar(sf::RenderWindow &window)
+{   
+    bar_width = 0.8 * window.getSize().x;
+    bar_height = 10.f;
+    sf::Vector2f barsize(bar_width, bar_height);
+    outer_hull.setSize(barsize);
+    outer_hull.setFillColor(sf::Color::White);
+    outer_hull.setOutlineColor(sf::Color::Blue);
+    outer_hull.setOutlineThickness(2.f);
+    auto outer_pos = sf::Vector2f(0.1 * window.getSize().x, 0.9 * window.getSize().y);
+    outer_hull.setPosition(outer_pos);
+
+    progress_bar.setPosition(outer_pos);
+    progress_bar.setFillColor(sf::Color::Blue);
+}
+
+void ProgressBar::draw(sf::RenderWindow &window, float progress)
+{   
+    progress_bar.setSize(sf::Vector2f(progress * bar_width, bar_height));
+    window.draw(outer_hull);
+    window.draw(progress_bar);
+}
+
 
 // void GravityGUI::renderFromFile
 // (

@@ -13,13 +13,13 @@ void InputHandler::addToStateOfBodies(int size, double weight, Vector2D pos, Vec
 // yet to be implemented
 void InputHandler::parseFile() {}
 
-void InputHandler::fillStateOfBodiesRandomly(int n, int size, double weight) {
+void InputHandler::fillStateOfBodiesRandomly(int n, int size, double weight, double origin, double scale) {
     // Set seed value based on current time
     std::srand(static_cast<unsigned int>(std::time(nullptr)));
 
     for(int m = 0; m<n; m++){
-        long double x = (std::rand() % 100)*0.1; //in astronomical units (1AU ~ 1.4e8 km)
-        long double y = (std::rand() % 100)*0.1;
+        long double x = (std::rand() % 100) * scale + origin; //in astronomical units (1AU ~ 1.4e8 km)
+        long double y = (std::rand() % 100) * scale + origin;
         Vector2D pos(x, y);
         Vector2D vel(0, 0);
         Vector2D acc(0, 0);
