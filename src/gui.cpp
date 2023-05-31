@@ -11,7 +11,11 @@
 
 GravityGUI::GravityGUI(int width, std::string transform, std::vector<float> range)
 : window(sf::VideoMode(width, width), "Gravity Simulator") 
-{
+{   
+    window.setFramerateLimit(60);
+
+    init_text();
+
     if (transform == "Rescale") 
     {
         transformation = std::make_unique<Rescale>(range[0], range[1], 0, window.getSize().x);
@@ -26,14 +30,28 @@ GravityGUI::GravityGUI(int width, std::string transform, std::vector<float> rang
     }
 };
 
+void GravityGUI::init_text()
+{
+    font.loadFromFile("../assets/DejaVuSerif.ttf");
+    text.setFont(font);
+    text.setCharacterSize(24);
+    text.setFillColor(sf::Color::Red);
+    text.setPosition(sf::Vector2f(10.f, 10.f));
+}
+
+void GravityGUI::print_fps(float frames_per_second)
+{  
+    std::string str = "FPS: " + std::to_string(frames_per_second);
+    text.setString(str);
+    window.draw(text);
+}
+
 void GravityGUI::renderTrajectory
 (
     std::vector<std::vector<DataPoint>> &stateOfDataPointsOverTime
 ) 
 {
     sf::Clock clock;
-    sf::Time timeSinceLastFrame = sf::Time::Zero;
-    const sf::Time TIME_PER_FRAME = sf::seconds(1.f / 20.f);
     
     auto state = StateOfCircles(stateOfDataPointsOverTime[0], std::move(transformation), 10.f);
 
@@ -54,10 +72,15 @@ void GravityGUI::renderTrajectory
             for (auto target : state.state) {
                 window.draw(target);
             }
-            // sleep(0.5);
+            sf::Time time = clock.getElapsedTime();
+
+            clock.restart().asSeconds();
+
+            print_fps(1.f / time.asSeconds()); 
+
             window.display();
         }
-    
+
     }
 }
 

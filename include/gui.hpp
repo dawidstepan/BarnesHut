@@ -13,10 +13,25 @@ struct GravityGUI {
 private:
     sf::RenderWindow window;
     std::unique_ptr<Transformation> transformation;
-
+    sf::Font font;
+    sf::Text text;
 
 public:
-    
+    /************************************************
+     * @brief Constructs a GravityGUI object with the specified width and transform.
+     *
+     * This constructor initializes a GravityGUI object with the given width and transform.
+     * It creates a graphical user interface for a gravity simulation. 
+     *
+     * @param width The width of the GUI window.
+     * @param transform The type of transformation to apply.
+     *                  This can be one of the following:
+     *                  - "Rescale": Linear rescaling transformation.
+     *                  - "Identity": Identity transformation (no transformation).
+     * @param range The range of values for the transformation.
+     *              The range should contain two elements: the minimum and maximum value.
+     *              
+     ***********************************************/
     GravityGUI(int width, std::string transform = "Rescale", 
                std::vector<float> range = {0.f, 10.f});
 
@@ -25,9 +40,6 @@ public:
      * The trajectory is passed in form of a vector std::vector<std::vector<DataPoint>>
      * which has shape (T, N), where T is the number of saved timesteps and N is the 
      * number of Bodies. Assuming N=const for now.
-     * 
-     * Disclaimer:
-     * This is not working at the moment!
      ***********************************************/
     void renderTrajectory(std::vector<std::vector<DataPoint>> &stateOfDataPointsOverTime);
 
@@ -37,4 +49,7 @@ public:
      ***********************************************/
     void renderSnapshot(std::vector<DataPoint> &stateOfDataPoints);
 
+    void init_text();
+
+    void print_fps(float frames_per_second);
 };
