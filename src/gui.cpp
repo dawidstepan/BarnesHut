@@ -44,7 +44,12 @@ void GravityGUI::renderTrajectory
     auto pause_pos = sf::Vector2f(0.7 * window.getSize().x, 0.1 * window.getSize().y);
     Button pauseButton(pause_pos, "Resume", "Pause", window);
 
-    auto state = StateOfCircles(stateOfDataPointsOverTime[0], std::move(transformation), 2.f);
+    auto color_scale = std::make_unique<ColorScale>(0, 0.2, sf::Color::Blue, sf::Color::White);
+    // auto color_scale = std::make_unique<ColorScale>(0, 1000000, sf::Color::Blue, sf::Color::White);
+    auto state = StateOfCircles(stateOfDataPointsOverTime[0], 
+                                std::move(transformation), 
+                                std::move(color_scale), 
+                                2.f);
     auto total_frame_number = stateOfDataPointsOverTime.size();
     
     bool paused = false;
@@ -59,13 +64,16 @@ void GravityGUI::renderTrajectory
         while (true) {
             pauseButton.draw();
             while (true) {
+                // reset iterator if at end -> infinite loop
                 if (it == end)
                     it = stateOfDataPointsOverTime.begin();
                 auto time_step = *it;
+
                 // Draw a Pause button which upon clicking pauses the animation
                 window.clear();
                 pauseButton.draw();
-                state.update_state_from_data_points(time_step, false);
+                state.update_state_from_data_points(time_step, true);
+
                 for (auto target : state.state) {
                     window.draw(target);
                 }
@@ -118,7 +126,11 @@ void GravityGUI::renderSnapshot(std::vector<DataPoint> &stateOfDataPoints) {
     sf::Time timeSinceLastFrame = sf::Time::Zero;
     const sf::Time TIME_PER_FRAME = sf::seconds(1.f / 20.f);
     
-    auto state = StateOfCircles(stateOfDataPoints, std::move(transformation), 10.f);
+    auto color_scale = std::make_unique<ColorScale>(0, 10);
+    auto state = StateOfCircles(stateOfDataPoints, 
+                                std::move(transformation), 
+                                std::move(color_scale), 
+                                2.f);
 
     while (window.isOpen()) 
     {

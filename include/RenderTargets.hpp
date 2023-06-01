@@ -47,6 +47,25 @@ private:
     float new_min;
 };
 
+struct ColorScale {
+
+ColorScale(float minValue, float maxValue, 
+            sf::Color color1 = sf::Color(59, 76, 192), // blue
+            sf::Color color2 = sf::Color(180, 4, 38)); // red
+
+public:
+
+    sf::Color interpolateColor(sf::Color color1, sf::Color color2, float t);
+
+    sf::Color getColorFromValue(float value);
+
+private:
+    float minValue;
+    float maxValue;
+    sf::Color color1;
+    sf::Color color2;
+
+};
 
 
 /************************************************
@@ -63,14 +82,7 @@ struct StateOfCircles {
 public:
     std::vector<sf::CircleShape> state;
     std::unique_ptr<Transformation> transform;
-
-    // StateOfCircles
-    // (
-    //     std::vector<Body> &stateOfBodies, 
-    //     float circleRadius = 10.f,
-    //     Transform transform = Identity()
-    // );
-
+    std::unique_ptr<ColorScale> color_scale;
 
     /************************************************
      * Constructor to create a StateOfCircles object from std::vector<DataPoint>
@@ -79,15 +91,10 @@ public:
     (
         std::vector<DataPoint> &stateOfDataPoints, 
         std::unique_ptr<Transformation> trafo,
+        std::unique_ptr<ColorScale> scale,
         float circleRadius = 10.f
     );
     
-
-    // void update_state_from_bodies
-    // (
-    //     std::vector<Body> &stateOfBodies,
-    //     bool showVelocity = false
-    // );
 
     /************************************************
      * Updates the positions of the sf::CircleShape instances contained in the
@@ -100,6 +107,3 @@ public:
     );
 
 };
-
-
-// #endif // GROUPMPROJECT_RENDERTARGETS_HPP
