@@ -1,5 +1,6 @@
 # include <cstdlib>
 # include <ctime>
+# include <random>
 
 # include "InputHandler.hpp"
 # include "Body.hpp"
@@ -15,11 +16,18 @@ void InputHandler::parseFile() {}
 
 void InputHandler::fillStateOfBodiesRandomly(int n, int size, double weight, double origin, double scale) {
     // Set seed value based on current time
-    std::srand(static_cast<unsigned int>(std::time(nullptr)));
+    std::random_device rd;
+    std::mt19937 gen(rd());
+
+    // Create a uniform real distribution in the range [0, 1]
+    std::uniform_real_distribution<float> dist(0.0f, 1.0f);
+
+    // Generate a random float value
+    float randomValue = dist(gen);
 
     for(int m = 0; m<n; m++){
-        long double x = (std::rand() % 100) * scale + origin; //in astronomical units (1AU ~ 1.4e8 km)
-        long double y = (std::rand() % 100) * scale + origin;
+        long double x = dist(gen) * scale + origin; //in astronomical units (1AU ~ 1.4e8 km)
+        long double y = dist(gen) * scale + origin;
         Vector2D pos(x, y);
         Vector2D vel(0, 0);
         Vector2D acc(0, 0);

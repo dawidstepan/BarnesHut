@@ -1,8 +1,11 @@
 #pragma once
 
 #include <SFML/Graphics.hpp>
+
+#include "Simulation.hpp"
 #include "DataPoint.hpp"
 #include "RenderTargets.hpp"
+#include <Widgets.hpp>
 
 
 /************************************************
@@ -49,9 +52,6 @@ public:
      ***********************************************/
     void renderSnapshot(std::vector<DataPoint> &stateOfDataPoints);
 
-    void init_text();
+    void renderSimulation(Simulation &simulation);
 
-    void print_fps(float frames_per_second);
-
-    void init_progressbar();
 };

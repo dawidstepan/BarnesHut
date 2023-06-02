@@ -1,11 +1,13 @@
-#ifndef GROUPMPROJECT_SIMULATION_HPP
-#define GROUPMPROJECT_SIMULATION_HPP
+#pragma once
 
 #include <vector>
+#include <memory>
+
 #include "Body.hpp"
-#include "GeneralParameters.hpp"
 #include "DataPoint.hpp"
-#include "gui.hpp"
+#include "ForceCalculator.hpp"
+#include "EulerIntegrator.hpp"
+#include "Units.hpp"
 
 /**
  * includes the core functionality of our program.
@@ -13,31 +15,25 @@
  * a pointer to stateOfBodiesOverTime,
  * and a pointer to generalParameters
  */
-class Simulation {
+struct Simulation {
 public:
-    Simulation(std::vector<Body> &currentStateOfBodies,
-               std::vector<std::vector<DataPoint>> &stateOfBodiesOverTime,
-               const GeneralParameters &generalParameters) :
-            currentStateOfBodies(currentStateOfBodies),
-            stateOfBodiesOverTime(stateOfBodiesOverTime),
-            generalParameters(generalParameters) {};
-
+    Simulation(const int dt = 3600, std::string algorithm = "Naive", float theta = 1);
 
     ///executes the Simulation
-    void runSimulation();
-    // void runSimulation(GravityGUI &GUI);
+    void runStep();
+
+    void saveStep();
+
+    void initializeFromVector (std::vector<Body> StateOfBodies);
+
+    std::vector<std::vector<DataPoint>> getStateOfDataPointsOverTime();
+
+    std::vector<Body> getCurrentStateOfBodies();
 
 private:
     /// the most basic approach to calculating the force between the objects
-    Vector2D getForceByNaiveAlgorithm(std::vector<Body>, std::vector<Body>::iterator iteratorToBody);
-
-    /// more sophisticated way of approximating the force
-    Vector2D getForceByBarnesHutAlgorithm(std::vector<Body>, std::vector<Body>::iterator iteratorToBody);
-
-    std::vector<Body> &currentStateOfBodies;
-    std::vector<std::vector<DataPoint>> &stateOfBodiesOverTime;
-    const GeneralParameters &generalParameters;
+    std::vector<Body> currentStateOfBodies;
+    std::vector<std::vector<DataPoint>> stateOfBodiesOverTime;
+    std::unique_ptr<ForceCalculator> forceCalc;
+    std::unique_ptr<EulerIntegrator> integrator;
 };
-
-
-#endif //GROUPMPROJECT_SIMULATION_HPP
