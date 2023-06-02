@@ -14,6 +14,8 @@ float Identity::reverse(float value){
     return value;
 }
 
+Rescale::Rescale() {};
+
 Rescale::Rescale(float min, float max, float new_min, float new_max)
 : min(min), new_min(new_min) {
     range = max - min;

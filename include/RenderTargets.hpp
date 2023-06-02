@@ -39,6 +39,7 @@ struct Rescale : public Transformation {
 
 public:
     Rescale(float min, float max, float new_min, float new_max);
+    Rescale();
 
     float apply(float value) override;
     float reverse(float value) override;
