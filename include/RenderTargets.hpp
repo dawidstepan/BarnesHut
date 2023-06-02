@@ -94,6 +94,14 @@ public:
         std::unique_ptr<ColorScale> scale,
         float circleRadius = 10.f
     );
+
+    StateOfCircles
+    (
+        std::vector<Body> &stateOfBodies, 
+        std::unique_ptr<Transformation> trafo,
+        std::unique_ptr<ColorScale> scale,
+        float circleRadius = 10.f
+    );
     
 
     /************************************************
@@ -103,6 +111,12 @@ public:
     void update_state_from_data_points
     (
         std::vector<DataPoint> &stateOfDataPoints, 
+        bool showVelocity = false
+    );
+
+    void update_state_from_bodies
+    (
+        std::vector<Body> &stateOfBodies,
         bool showVelocity = false
     );
 

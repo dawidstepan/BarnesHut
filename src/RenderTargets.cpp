@@ -102,3 +102,61 @@ void StateOfCircles::update_state_from_data_points
 
     }
 }
+
+
+StateOfCircles::StateOfCircles
+(
+    std::vector<Body> &stateOfBodies, 
+    std::unique_ptr<Transformation> trafo,
+    std::unique_ptr<ColorScale> scale,
+    float circleRadius
+) : transform(std::move(trafo)), color_scale(std::move(scale))
+{
+    // Setup initial list of pointers to circle objects in state
+    for (auto it = stateOfBodies.begin(); it != stateOfBodies.end(); ++it)
+    {
+        auto circle = sf::CircleShape(circleRadius);
+        auto pos = it->getPos();
+        circle.setFillColor(sf::Color::Green);
+        circle.setPosition(pos.x, pos.y);
+        state.push_back(circle);
+    }
+}
+
+void StateOfCircles::update_state_from_bodies
+(
+    std::vector<Body> &stateOfBodies, 
+    bool showVelocity
+)
+{
+    auto body_size = stateOfBodies.size();
+    // If number of points decreased due to collision detection, remove 
+    // remove the excess circles.
+    auto size_diff = state.size() - body_size;
+    for (int i = 0; i < size_diff; ++i) 
+    {
+        state.pop_back();
+    }
+
+    // Loop over indices of stateOfBodies and transfer information to
+    // StateOfCircles.state
+    for (int i = 0; i < body_size; i++) 
+    {
+        auto pos = stateOfBodies[i].getPos();
+        state[i].setPosition(
+            transform->apply(pos.x), 
+            transform->apply(pos.y)
+        );
+        
+
+        state[i].setRadius(std::log10(stateOfBodies[i].getWeight()) * 2);
+
+        if (showVelocity) {
+            auto acc = stateOfBodies[i].getAcc();
+            auto v_mag = std::sqrt(acc.x*acc.x + acc.y*acc.y);
+            // auto v_mag = std::sqrt(point.vx*point.vx + point.vy*point.vy);
+            state[i].setFillColor(color_scale->getColorFromValue(v_mag));
+        }
+
+    }
+}

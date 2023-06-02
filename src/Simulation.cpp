@@ -1,9 +1,7 @@
 #include <iostream>
+#include <cmath>
+
 #include "Simulation.hpp"
-#include "EulerIntegrator.hpp"
-#include "Units.hpp"
-#include "gui.hpp"
-#include "RenderTargets.hpp"
 
 Simulation::Simulation
 (
@@ -37,6 +35,12 @@ void Simulation::runStep() {
     for (auto iteratorToBody = currentStateOfBodies.begin(); iteratorToBody != currentStateOfBodies.end(); ++iteratorToBody) {
 
         auto totalForce = forceCalc->getForceOnSingleParticle(currentStateOfBodies, iteratorToBody);
+
+        if (std::isnan(totalForce.x))
+            throw std::runtime_error("NaNs in Forces. Abort!");
+        else if (totalForce.x > 1e50)
+            throw std::runtime_error("Exploding Forces. Abort!");
+        
 
         //dereferencing the iterator just for convenience
         Body newBody = *iteratorToBody;
@@ -91,4 +95,8 @@ void Simulation::initializeFromVector(std::vector<Body> StateOfBodies) {
 
 std::vector<std::vector<DataPoint>> Simulation::getStateOfDataPointsOverTime() {
     return stateOfBodiesOverTime;
+}
+
+std::vector<Body> Simulation::getCurrentStateOfBodies() {
+    return currentStateOfBodies;
 }

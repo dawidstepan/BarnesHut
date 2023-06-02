@@ -3,9 +3,9 @@
 
 # include "InputHandler.hpp"
 # include "Simulation.hpp"
+# include "gui.hpp"
 # include "Writer.hpp"
 # include "Body.hpp"
-# include "GeneralParameters.hpp"
 # include "DataPoint.hpp"
 
 
@@ -30,6 +30,8 @@ int main(){
     int totalNumberOfSteps = 2000;
     int saveOnEveryXthStep = 1;
     std::string algorithm = "Naive"; 
+    bool showLive = true;
+    
 
 
     std::vector<Body> currentStateOfBodies; 
@@ -38,22 +40,31 @@ int main(){
     // Automatic creation of randomly distributed particles:
     // Nico: this does not work with weights smaller than 1 (e.g. 0.5). 
     // Does anyone have an idea why??
-    inputHandler.fillStateOfBodiesRandomly(20, 696340, 10., -15, 0.1);
-    inputHandler.fillStateOfBodiesRandomly(20, 696340, 10., 15, 0.3);
+    inputHandler.fillStateOfBodiesRandomly(200, 696340, 10, 0, 100);
+    inputHandler.fillStateOfBodiesRandomly(1, 696340, 100000, 50, 10);
 
     Simulation simulation(dt, algorithm, theta);
     simulation.initializeFromVector(currentStateOfBodies);
 
-    for (int i=0; i < totalNumberOfSteps; i++){
-        simulation.runStep();
-        if (i % saveOnEveryXthStep == 0)
-            simulation.saveStep();
+
+    if (showLive)
+    {
+        GravityGUI gui(600, "Rescale", {-100.f, 200.f});
+        gui.renderSimulation(simulation);
     }
+    else
+    {
+        for (int i=0; i < totalNumberOfSteps; i++){
+            simulation.runStep();
+            if (i % saveOnEveryXthStep == 0)
+                simulation.saveStep();
+        }
 
-    GravityGUI gui(600, "Rescale", {-30.f, 60.f});
+        GravityGUI gui(600, "Rescale", {-200.f, 500.f});
+        
+        auto trajectory = simulation.getStateOfDataPointsOverTime();
+        gui.renderTrajectory(trajectory);
+    }
     
-    auto trajectory = simulation.getStateOfDataPointsOverTime();
-    gui.renderTrajectory(trajectory);
-
     return 0;
 }
