@@ -4,6 +4,20 @@
 #include "Units.hpp"
 #include "gui.hpp"
 #include "RenderTargets.hpp"
+#include "ForceCalculator.hpp"
+
+Simulation::Simulation
+(
+    std::vector<Body> &currentStateOfBodies,
+    std::vector<std::vector<DataPoint>> &stateOfBodiesOverTime,
+    const GeneralParameters &generalParameters
+)
+: currentStateOfBodies(currentStateOfBodies),
+  stateOfBodiesOverTime(stateOfBodiesOverTime),
+  generalParameters(generalParameters)
+{
+    ForceCalc = std::make_unique<NaiveForceCalculator>();
+}
 
 void Simulation::runSimulation() {
 
@@ -17,15 +31,16 @@ void Simulation::runSimulation() {
         for (auto iteratorToBody = currentStateOfBodies.begin(); iteratorToBody != currentStateOfBodies.end(); ++iteratorToBody) {
             // calculating the total force with the algorithm the 'getForce' pointer is set to
 
-            Vector2D totalForce;
-            switch (generalParameters.algorithmToUse){
-                case 0: //this means we will use the simplest, brute-force-ish approach to calculate the force
-                    totalForce = getForceByNaiveAlgorithm(currentStateOfBodies, iteratorToBody);
-                    break;
-                case 1: //this means we will use the more sophisticated Barnes-Hut algorithm to approximate the force
-                    totalForce = getForceByBarnesHutAlgorithm(currentStateOfBodies, iteratorToBody);
-                    break;
-            }
+            // Vector2D totalForce;
+            // switch (generalParameters.algorithmToUse){
+            //     case 0: //this means we will use the simplest, brute-force-ish approach to calculate the force
+            //         totalForce = getForceByNaiveAlgorithm(currentStateOfBodies, iteratorToBody);
+            //         break;
+            //     case 1: //this means we will use the more sophisticated Barnes-Hut algorithm to approximate the force
+            //         totalForce = getForceByBarnesHutAlgorithm(currentStateOfBodies, iteratorToBody);
+            //         break;
+            // }
+            auto totalForce = ForceCalc->getForceOnSingleParticle(currentStateOfBodies, iteratorToBody);
 
             //dereferencing the iterator just for convenience
             Body newBody = *iteratorToBody;
@@ -84,34 +99,35 @@ void Simulation::runSimulation() {
 // * * * * * * * * * * * * * *
 // *  yet to be implemented! *
 // * * * * * * * * * * * * * *
-Vector2D Simulation::getForceByBarnesHutAlgorithm(std::vector<Body>, std::vector<Body>::iterator iteratorToBody){
-    std::cout << "this is the barnes hut algorithm lul" << std::endl;
-}
+// Vector2D Simulation::getForceByBarnesHutAlgorithm(std::vector<Body>, std::vector<Body>::iterator iteratorToBody){
+//     std::cout << "this is the barnes hut algorithm lul" << std::endl;
+// }
 
-/// the most basic approach to calculating the force between the objects
-Vector2D Simulation::getForceByNaiveAlgorithm(std::vector<Body>, std::vector<Body>::iterator iteratorToBody) {
-    Vector2D totalForce(0, 0);
-    for (auto iteratorToOtherBody = currentStateOfBodies.begin(); iteratorToOtherBody != currentStateOfBodies.end(); ++iteratorToOtherBody){
-        //check if we aren't comparing the same bodies with each other
-        if (iteratorToBody != iteratorToOtherBody) {
-            //getting relevant data
-            Vector2D pos1 = iteratorToBody->getPos();
-            Vector2D pos2 = iteratorToOtherBody->getPos();
-            long double m1 = iteratorToBody->getWeight();
-            long double m2 = iteratorToOtherBody->getWeight();
-            /*
-             * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-             *  maybe here would be a good place to call a collision-detection function? *
-             * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-            */
-            //we are just rn computing the distance, after all
-            Vector2D distanceVector = pos2-pos1;
-            long double distanceNorm = distanceVector.getNorm();
-            //calculating the force (in newton)
-            Vector2D force = distanceVector*((m1*m2))/((distanceNorm * distanceNorm * distanceNorm))*conversionFactor;
-            totalForce =  totalForce + force;
-            return totalForce;
-        }
-    }
+// /// the most basic approach to calculating the force between the objects
+// Vector2D Simulation::getForceByNaiveAlgorithm(std::vector<Body>, std::vector<Body>::iterator iteratorToBody) {
+//     Vector2D totalForce(0, 0);
+//     for (auto iteratorToOtherBody = currentStateOfBodies.begin(); iteratorToOtherBody != currentStateOfBodies.end(); ++iteratorToOtherBody){
+//         //check if we aren't comparing the same bodies with each other
+//         if (iteratorToBody != iteratorToOtherBody) {
+//             //getting relevant data
+//             //getting relevant data
+//             Vector2D pos1 = iteratorToBody->getPos();
+//             Vector2D pos2 = iteratorToOtherBody->getPos();
+//             long double m1 = iteratorToBody->getWeight();
+//             long double m2 = iteratorToOtherBody->getWeight();
+//             /*
+//              * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+//              *  maybe here would be a good place to call a collision-detection function? *
+//              * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+//             */
+//             //we are just rn computing the distance, after all
+//             Vector2D distanceVector = pos2-pos1;
+//             long double distanceNorm = distanceVector.getNorm();
+//             //calculating the force (in newton)
+//             Vector2D force = distanceVector*((m1*m2))/((distanceNorm * distanceNorm * distanceNorm))*conversionFactor;
+//             totalForce =  totalForce + force;
+//             return totalForce;
+//         }
+//     }
 
-}
+// }

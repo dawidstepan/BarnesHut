@@ -1,11 +1,13 @@
-#ifndef GROUPMPROJECT_SIMULATION_HPP
-#define GROUPMPROJECT_SIMULATION_HPP
+#pragma once
 
 #include <vector>
+#include <memory>
+
 #include "Body.hpp"
 #include "GeneralParameters.hpp"
 #include "DataPoint.hpp"
 #include "gui.hpp"
+#include "ForceCalculator.hpp"
 
 /**
  * includes the core functionality of our program.
@@ -17,10 +19,7 @@ class Simulation {
 public:
     Simulation(std::vector<Body> &currentStateOfBodies,
                std::vector<std::vector<DataPoint>> &stateOfBodiesOverTime,
-               const GeneralParameters &generalParameters) :
-            currentStateOfBodies(currentStateOfBodies),
-            stateOfBodiesOverTime(stateOfBodiesOverTime),
-            generalParameters(generalParameters) {};
+               const GeneralParameters &generalParameters);
 
 
     ///executes the Simulation
@@ -29,15 +28,35 @@ public:
 
 private:
     /// the most basic approach to calculating the force between the objects
-    Vector2D getForceByNaiveAlgorithm(std::vector<Body>, std::vector<Body>::iterator iteratorToBody);
-
-    /// more sophisticated way of approximating the force
-    Vector2D getForceByBarnesHutAlgorithm(std::vector<Body>, std::vector<Body>::iterator iteratorToBody);
-
     std::vector<Body> &currentStateOfBodies;
     std::vector<std::vector<DataPoint>> &stateOfBodiesOverTime;
     const GeneralParameters &generalParameters;
+    std::unique_ptr<ForceCalculator> ForceCalc;
 };
 
+// class Simulation {
+// public:
+//     Simulation(std::vector<Body> &currentStateOfBodies,
+//                std::vector<std::vector<DataPoint>> &stateOfBodiesOverTime,
+//                const GeneralParameters &generalParameters) :
+//             currentStateOfBodies(currentStateOfBodies),
+//             stateOfBodiesOverTime(stateOfBodiesOverTime),
+//             generalParameters(generalParameters) {};
 
-#endif //GROUPMPROJECT_SIMULATION_HPP
+
+//     ///executes the Simulation
+//     void runSimulation();
+//     // void runSimulation(GravityGUI &GUI);
+
+// private:
+//     /// the most basic approach to calculating the force between the objects
+//     Vector2D getForceByNaiveAlgorithm(std::vector<Body>, std::vector<Body>::iterator iteratorToBody);
+
+//     /// more sophisticated way of approximating the force
+//     Vector2D getForceByBarnesHutAlgorithm(std::vector<Body>, std::vector<Body>::iterator iteratorToBody);
+
+//     std::vector<Body> &currentStateOfBodies;
+//     std::vector<std::vector<DataPoint>> &stateOfBodiesOverTime;
+//     const GeneralParameters &generalParameters;
+// };
+

@@ -15,7 +15,7 @@ GravityGUI::GravityGUI(int width, std::string transform, std::vector<float> rang
                        int print_fps_every)
 : window(sf::VideoMode(width, width), "Gravity Simulator"), print_fps_every(print_fps_every)
 {   
-    // window.setFramerateLimit(60);
+    window.setFramerateLimit(60);
 
     if (transform == "Rescale") 
     {
@@ -111,6 +111,9 @@ void GravityGUI::renderTrajectory
                         {
                             window.close();
                         }
+                    // else if (event.type == sf::Event::MouseButtonPressed)
+                    //     window.setFramerateLimit(60);
+
                     pauseButton.handleEvent(event);
                 }
             }
