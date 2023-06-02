@@ -114,3 +114,54 @@ void Button::center_text() {
     label.setOrigin(textBounds.left + textBounds.width / 2.f, textBounds.top + textBounds.height / 2.f);
     label.setPosition(position.x + size.x / 2.f, position.y + size.y / 2.f);
 }
+
+
+
+Slider::Slider(const sf::Vector2f position, sf::RenderWindow &window, float min, float max)
+: window(window)
+{   
+    bar_height = 0.5 * window.getSize().x;
+    bar_width = 10.f;
+    sf::Vector2f barsize(bar_width, bar_height);
+    slider_bar.setSize(barsize);
+    slider_bar.setFillColor(sf::Color::White);
+    slider_bar.setOutlineColor(sf::Color::Blue);
+    slider_bar.setOutlineThickness(2.f);
+    slider_bar.setPosition(position);
+
+    auto knob_width = 2 * bar_width;
+    knob.setPosition(position.x -(knob_width - bar_width) / 2,  position.y);
+    sf::Vector2f knobsize(knob_width, 10.f);
+    knob.setSize(knobsize);
+    knob.setFillColor(sf::Color::Blue);
+    value = max;
+
+    auto y_min = position.y + bar_height;
+    auto y_max = position.y;
+    transform = Rescale(y_min, y_max, min, max);
+}
+
+void Slider::draw()
+{   
+    // knob.setSize(sf::Vector2f(progress * bar_width, bar_height));
+    window.draw(slider_bar);
+    window.draw(knob);
+}
+
+float Slider::getValue()
+{   
+    return value;
+}
+
+void Slider::handleEvent(const sf::Event& event) {
+    if (event.type == sf::Event::MouseButtonPressed) {
+        sf::Vector2i mousePosition = sf::Mouse::getPosition(window);
+        if (slider_bar.getGlobalBounds().contains(mousePosition.x, mousePosition.y)) {
+            auto pos = knob.getPosition();
+            knob.setPosition(pos.x, mousePosition.y);
+            value = transform.apply(mousePosition.y);
+            window.draw(slider_bar);
+            window.draw(knob);
+        }
+    }
+}

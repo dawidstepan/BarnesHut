@@ -40,8 +40,8 @@ int main(){
     // Automatic creation of randomly distributed particles:
     // Nico: this does not work with weights smaller than 1 (e.g. 0.5). 
     // Does anyone have an idea why??
-    inputHandler.fillStateOfBodiesRandomly(200, 696340, 10, 0, 100);
-    inputHandler.fillStateOfBodiesRandomly(1, 696340, 100000, 50, 10);
+    inputHandler.fillStateOfBodiesRandomly(200, 696340, 10, Vector2D(0, 0), Vector2D(100, 100));
+    inputHandler.fillStateOfBodiesRandomly(1, 696340, 100000, Vector2D(50, 50), Vector2D(10, 10));
 
     Simulation simulation(dt, algorithm, theta);
     simulation.initializeFromVector(currentStateOfBodies);

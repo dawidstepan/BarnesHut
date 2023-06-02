@@ -15,6 +15,7 @@
  ***********************************************/
 struct Transformation {
     virtual float apply(float value) = 0;
+    virtual float reverse(float value) = 0;
     
     virtual ~Transformation(){}
 };
@@ -25,6 +26,7 @@ struct Transformation {
  ***********************************************/
 struct Identity : public Transformation {
     float apply(float value) override;
+    float reverse(float value) override;
 };
 
 
@@ -37,8 +39,10 @@ struct Rescale : public Transformation {
 
 public:
     Rescale(float min, float max, float new_min, float new_max);
+    Rescale();
 
     float apply(float value) override;
+    float reverse(float value) override;
 
 private:
     float range;
@@ -81,7 +85,7 @@ struct StateOfCircles {
 
 public:
     std::vector<sf::CircleShape> state;
-    std::unique_ptr<Transformation> transform;
+    std::shared_ptr<Transformation> transform;
     std::unique_ptr<ColorScale> color_scale;
 
     /************************************************
@@ -90,7 +94,7 @@ public:
     StateOfCircles
     (
         std::vector<DataPoint> &stateOfDataPoints, 
-        std::unique_ptr<Transformation> trafo,
+        std::shared_ptr<Transformation> trafo,
         std::unique_ptr<ColorScale> scale,
         float circleRadius = 10.f
     );
@@ -98,7 +102,7 @@ public:
     StateOfCircles
     (
         std::vector<Body> &stateOfBodies, 
-        std::unique_ptr<Transformation> trafo,
+        std::shared_ptr<Transformation> trafo,
         std::unique_ptr<ColorScale> scale,
         float circleRadius = 10.f
     );

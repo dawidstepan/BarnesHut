@@ -11,6 +11,7 @@ add_custom_target(${TEST_BUILD_TARGET} ALL)
 set(MY_TEST_NAMES "")
 list(APPEND MY_TEST_NAMES "testRenderTargets")
 list(APPEND MY_TEST_NAMES "testgui")
+list(APPEND MY_TEST_NAMES "testTextInput")
 
   foreach(MY_TEST_NAME ${MY_TEST_NAMES})
     # build test executable and link project library

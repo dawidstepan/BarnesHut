@@ -66,16 +66,6 @@ private:
 
 
 struct Button {
-    sf::RectangleShape shape;
-    sf::Text label;
-    std::string text_on;
-    std::string text_off;
-    bool pressed = false;
-    sf::RenderWindow &window;
-    sf::Color color_off = sf::Color::Green;
-    sf::Color color_on = sf::Color::White;
-    sf::Font font;
-
     Button(const sf::Vector2f position, const std::string text_on, 
            const std::string text_off, sf::RenderWindow &window);
 
@@ -86,4 +76,34 @@ struct Button {
     bool isPressed();
 
     void center_text();
+
+private:
+    sf::RectangleShape shape;
+    sf::Text label;
+    std::string text_on;
+    std::string text_off;
+    bool pressed = false;
+    sf::RenderWindow &window;
+    sf::Color color_off = sf::Color::Green;
+    sf::Color color_on = sf::Color::White;
+    sf::Font font;
+};
+
+
+struct Slider {   
+
+Slider(const sf::Vector2f position, sf::RenderWindow &window, float min, float max);
+
+void draw();
+void handleEvent(const sf::Event& event);
+float getValue();
+
+private:
+    sf::RectangleShape slider_bar;
+    sf::RectangleShape knob;
+    float bar_width;
+    float bar_height;
+    float value;
+    sf::RenderWindow &window;
+    Rescale transform;
 };

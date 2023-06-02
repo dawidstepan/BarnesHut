@@ -10,6 +10,11 @@
 float Identity::apply(float value){
     return value;
 }
+float Identity::reverse(float value){
+    return value;
+}
+
+Rescale::Rescale() {};
 
 Rescale::Rescale(float min, float max, float new_min, float new_max)
 : min(min), new_min(new_min) {
@@ -19,6 +24,9 @@ Rescale::Rescale(float min, float max, float new_min, float new_max)
 
 float Rescale::apply(float value) {
     return (((value - min) / range) * new_range) + new_min;
+}
+float Rescale::reverse(float value) {
+    return (((value - new_min) / new_range) * range) + min;
 }
 
 
@@ -50,7 +58,7 @@ sf::Color ColorScale::getColorFromValue(float value) {
 StateOfCircles::StateOfCircles
 (
     std::vector<DataPoint> &stateOfDataPoints, 
-    std::unique_ptr<Transformation> trafo,
+    std::shared_ptr<Transformation> trafo,
     std::unique_ptr<ColorScale> scale,
     float circleRadius
 ) : transform(std::move(trafo)), color_scale(std::move(scale))
@@ -107,7 +115,7 @@ void StateOfCircles::update_state_from_data_points
 StateOfCircles::StateOfCircles
 (
     std::vector<Body> &stateOfBodies, 
-    std::unique_ptr<Transformation> trafo,
+    std::shared_ptr<Transformation> trafo,
     std::unique_ptr<ColorScale> scale,
     float circleRadius
 ) : transform(std::move(trafo)), color_scale(std::move(scale))
@@ -132,10 +140,23 @@ void StateOfCircles::update_state_from_bodies
     auto body_size = stateOfBodies.size();
     // If number of points decreased due to collision detection, remove 
     // remove the excess circles.
-    auto size_diff = state.size() - body_size;
-    for (int i = 0; i < size_diff; ++i) 
+    auto state_size = state.size();
+
+    if (state_size < body_size)
     {
-        state.pop_back();
+        auto size_diff = body_size - state_size;
+        for (int i = 0; i < size_diff; ++i) 
+        {
+            state.push_back(sf::CircleShape(2.f));
+        }
+    }
+    else if (state_size > body_size)
+    {
+        auto size_diff = state_size - body_size;
+        for (int i = 0; i < -size_diff; ++i)
+        {
+            state.pop_back();
+        }
     }
 
     // Loop over indices of stateOfBodies and transfer information to

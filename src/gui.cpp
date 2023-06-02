@@ -1,4 +1,5 @@
 #include <gui.hpp>
+#include <InputHandler.hpp>
 
 #include <SFML/Graphics.hpp>
 #include <iostream>
@@ -15,11 +16,11 @@ GravityGUI::GravityGUI(int width, std::string transform, std::vector<float> rang
 {   
     if (transform == "Rescale") 
     {
-        transformation = std::make_unique<Rescale>(range[0], range[1], 0, window.getSize().x);
+        transformation = std::make_shared<Rescale>(range[0], range[1], 0, window.getSize().x);
     }
     else if (transform == "Identity")
     {
-        transformation = std::make_unique<Identity>();
+        transformation = std::make_shared<Identity>();
     }
     else
     {
@@ -165,17 +166,26 @@ void GravityGUI::renderSimulation
     FPSDisplay fps_display(window);
     auto pause_pos = sf::Vector2f(0.7 * window.getSize().x, 0.1 * window.getSize().y);
     Button pauseButton(pause_pos, "Resume", "Pause", window);
+    auto draw_pos = sf::Vector2f(0.7 * window.getSize().x, 0.2 * window.getSize().y);
+    Button drawButton(draw_pos, "Deactivate", "Activate", window);
+    auto massslider_pos = sf::Vector2f(0.9 * window.getSize().x, 0.4 * window.getSize().y);
+    auto scaleslider_pos = sf::Vector2f(0.8 * window.getSize().x, 0.4 * window.getSize().y);
+
+    Slider mass_slider(massslider_pos, window, 1.f, 10000.f);
+    Slider scale_slider(scaleslider_pos, window, 0.1f, 100.f);
 
     auto color_scale = std::make_unique<ColorScale>(0, 0.2, sf::Color::Blue, sf::Color::White);
     auto initialStateOfBodies = simulation.getCurrentStateOfBodies();
     auto state = StateOfCircles(initialStateOfBodies, 
-                                std::move(transformation), 
+                                transformation, 
                                 std::move(color_scale), 
                                 2.f);
     std::vector<Body> time_step;
+    sf::Vector2i mousePosition;
 
     bool paused = false;
     bool shutdown = false;
+    bool add_particles = false;
     int frame_index = 0;
     float time_fps = 0;
     float print_fps = 0;
@@ -185,19 +195,36 @@ void GravityGUI::renderSimulation
 
         while (!shutdown) {
             pauseButton.draw();
+            drawButton.draw();
+            mass_slider.draw();
+            scale_slider.draw();
             while (!shutdown) {
-                
+
+                // Compute the timestep
                 if (!pauseButton.isPressed())
                 {
                     simulation.runStep();
                     time_step = simulation.getCurrentStateOfBodies();
-                    // Draw a progress bar showing the progress of the animation
                     frame_index++;
+                }
+
+                // dynamically add particles
+                if (drawButton.isPressed() & add_particles)
+                {
+                    time_step = simulation.getCurrentStateOfBodies();
+                    InputHandler inputHandler(time_step);
+                    auto spawn_x = transformation->reverse(mousePosition.x);
+                    auto spawn_y = transformation->reverse(mousePosition.y);
+                    inputHandler.fillStateOfBodiesRandomly(10, 696340, mass_slider.getValue(), Vector2D(spawn_x, spawn_y), Vector2D(scale_slider.getValue(),scale_slider.getValue()));
+                    simulation.initializeFromVector(time_step);
                 }
 
                 // Draw a Pause button which upon clicking pauses the animation
                 window.clear();
                 pauseButton.draw();
+                drawButton.draw();
+                mass_slider.draw();
+                scale_slider.draw();
                 state.update_state_from_bodies(time_step, true);
 
                 for (auto target : state.state) {
@@ -216,6 +243,7 @@ void GravityGUI::renderSimulation
                 fps_display.draw(print_fps);
 
                 window.display();
+                add_particles = false;
 
                 sf::Event event;
                 while (window.pollEvent(event))
@@ -224,12 +252,15 @@ void GravityGUI::renderSimulation
                         {
                             window.close();
                             shutdown = true;
-
                         }
-                    // else if (event.type == sf::Event::MouseButtonPressed)
-                    //     window.setFramerateLimit(60);
+                    else if (event.type == sf::Event::MouseWheelScrolled)
+                        add_particles = true;
+                        mousePosition = sf::Mouse::getPosition(window);
 
                     pauseButton.handleEvent(event);
+                    drawButton.handleEvent(event);
+                    mass_slider.handleEvent(event);
+                    scale_slider.handleEvent(event);
                 }
             }
         }
