@@ -8,18 +8,26 @@
 
 /**
  * @class Node
- * @brief A class which represent a node in a Barnes-Hut tree.
+ * @brief A class which represent a node in a Barnes-Hut tree for a N-body simulation.
  */
 
 class Node {
 public:
-    enum class Quadrant { NW, NE, SW, SE };
+    enum class Quadrant {
+        NW, 
+        NE, 
+        SW, 
+        SE
+    };
 
-    Node(const Cell& cell, Vector2D position)
-        : cell(cell), position(position), totalMass(0.0), centerOfMass(Vector2D()) {}
+    Node(Cell& cell, Vector2D& position, int level)
+        : cell(cell), position(position), level(level), totalMass(0.0), centerOfMass(Vector2D(0,0)) {}
 
     bool isLeaf() const {
-        return children[0] == nullptr && children[1] == nullptr && children[2] == nullptr && children[3] == nullptr;
+        return children[0] == nullptr 
+            && children[1] == nullptr 
+            && children[2] == nullptr 
+            && children[3] == nullptr;
     }
 
     const Cell& getCell() const {
@@ -30,7 +38,7 @@ public:
         return position;
     }
 
-    const std::vector<size_t>& getParticleIndices() const {
+    std::vector<size_t>& getParticleIndices() {
         return particleIndices;
     }
 
@@ -38,23 +46,46 @@ public:
         particleIndices.push_back(index);
     }
 
-    Node::Quadrant getQuadrant(const std::vector<Vector2D>& positions, size_t index) const {
-    const Vector2D& particlePosition = positions[index];
-    Vector2D cellMidPoint = (cell.getMin() + cell.getMax()) / 2.0;
+    Node::Quadrant getQuadrant(const Vector2D& particlePosition) const {
+        Vector2D cellMidPoint = (cell.getMin() + cell.getMax()) / 2.0;
 
-    if (particlePosition.x <= cellMidPoint.x) {
-        if (particlePosition.y <= cellMidPoint.y) {
-            return Node::Quadrant::SW;
+        if (particlePosition.x <= cellMidPoint.x) {
+            if (particlePosition.y <= cellMidPoint.y) {
+                return Node::Quadrant::SW;
+            } else {
+                return Node::Quadrant::NW;
+            }
         } else {
-            return Node::Quadrant::NW;
-        }
-    } else {
-        if (particlePosition.y <= cellMidPoint.y) {
-            return Node::Quadrant::SE;
-        } else {
-            return Node::Quadrant::NE;
+            if (particlePosition.y <= cellMidPoint.y) {
+                return Node::Quadrant::SE;
+            } else {
+                return Node::Quadrant::NE;
             }
         }
+    }
+
+    Vector2D setChildPosition(int quadrant) const {
+        double halfLength = this->getCell().getHalfLength();
+        Vector2D childPosition;
+
+        switch (quadrant) {
+        case 0: // NW
+            childPosition = Vector2D(cell.getCenter().x - halfLength, cell.getCenter().y + halfLength);
+            break;
+        case 1: // NE
+            childPosition = Vector2D(cell.getCenter().x + halfLength, cell.getCenter().y + halfLength);
+            break;
+        case 2: // SW
+            childPosition = Vector2D(cell.getCenter().x - halfLength, cell.getCenter().y - halfLength);
+            break;
+        case 3: // SE
+            childPosition = Vector2D(cell.getCenter().x + halfLength, cell.getCenter().y - halfLength);
+            break;
+        default:
+            throw std::invalid_argument("Invalid quadrant");
+        }
+
+        return childPosition;
     }
 
     const std::unique_ptr<Node>& getChild(Node::Quadrant quadrant) const {
@@ -65,8 +96,8 @@ public:
         return children[static_cast<int>(quadrant)];
     }
 
-    void addChild(Node::Quadrant quadrant, std::unique_ptr<Node>&& child) {
-        children[static_cast<int>(quadrant)] = std::move(child);
+    void addChild(int quadrant, std::unique_ptr<Node>&& child) {
+        children[quadrant] = std::move(child);
     }
 
     double getTotalMass() const {
@@ -85,13 +116,18 @@ public:
         centerOfMass = center;
     }
 
+    int getLevel() const {
+        return level;
+    }
+
 private:
-    const Cell& cell;
-    const Vector2D& position;
+    int level = 0;
+    Cell cell;
+    Vector2D position;
     std::vector<size_t> particleIndices;
     std::array<std::unique_ptr<Node>, 4> children;
     double totalMass;
     Vector2D centerOfMass;
 };
 
-#endif  // NODE_HPP
+#endif // NODE_HPP
