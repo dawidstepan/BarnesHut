@@ -92,6 +92,8 @@ void StateOfCircles::update_state_from_data_points
             transform->apply(point.y)
         );
 
+        state[i].setRadius(point.weight/5.f);
+
         if (showVelocity) {
             auto v_mag = std::sqrt(point.ax*point.ax + point.ay*point.ay);
             // auto v_mag = std::sqrt(point.vx*point.vx + point.vy*point.vy);

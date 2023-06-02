@@ -29,3 +29,13 @@ Vector2D NaiveForceCalculator::getForceOnSingleParticle(std::vector<Body> &curre
     }
     return totalForce;
 }
+
+
+BarnesHutForceCalculator::BarnesHutForceCalculator(float theta) : theta(theta) {};
+
+
+void BarnesHutForceCalculator::initializeFromParticles(std::vector<Body> &currentStateOfBodies) {}
+
+Vector2D BarnesHutForceCalculator::getForceOnSingleParticle(std::vector<Body> &currentStateOfBodies, std::vector<Body>::iterator iteratorToBody) {
+    return Vector2D(0., 0.);
+}

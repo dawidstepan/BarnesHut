@@ -25,10 +25,13 @@ struct NaiveForceCalculator : ForceCalculator {
 
 struct BarnesHutForceCalculator : ForceCalculator {
 
+    BarnesHutForceCalculator(float theta);
+
     void initializeFromParticles(std::vector<Body> &currentStateOfBodies) override;
 
     Vector2D getForceOnSingleParticle(std::vector<Body> &currentStateOfBodies, std::vector<Body>::iterator iteratorToBody) override;
 
     private:
         int BarnesHutTree; // computed in initalizeFromParticles
+        float theta;
 };

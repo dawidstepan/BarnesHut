@@ -25,45 +25,35 @@
 
 int main(){
 
-    std::vector<Body> currentStateOfBodies;    ///< this vector contains the current state of all our bodies
-    std::vector<std::vector<DataPoint>> stateOfDataPointsOverTime; ///< contains a stripped-down copy of currentStateOfBodies for each timestep
-    GeneralParameters generalParameters{};
+    float theta = 1;    /// describes the quality of our Barnes-Hut approximation
+    int dt = 3600;         /// timestep in seconds
+    int totalNumberOfSteps = 2000;
+    int saveOnEveryXthStep = 1;
+    std::string algorithm = "Naive"; 
 
-    generalParameters.dt = 3600;   //dt in seconds
-    generalParameters.theta = 1;
-    generalParameters.totalNumberOfSteps=2000;
-    generalParameters.saveOnEveryXthStep=1;
-    generalParameters.algorithmToUse=0;
 
-    // random sample code to show some functions in action
-    /*
-     * x- & y coordinates in astronomical Units,
-     * weight in sun masses
-     */
-
+    std::vector<Body> currentStateOfBodies; 
     InputHandler inputHandler(currentStateOfBodies);
 
-    // Manual creation of StateOfBodies:
-    // Vector2D initialPos1(0, 7);
-    // Vector2D initialPos2(0, 5);
-    // Vector2D nullVector(0, 0);
-    // inputHandler.addToStateOfBodies(6e3, 1, initialPos1, nullVector, nullVector);
-    // inputHandler.addToStateOfBodies(6e3, 1, initialPos2, nullVector, nullVector);
-    
     // Automatic creation of randomly distributed particles:
     // Nico: this does not work with weights smaller than 1 (e.g. 0.5). 
     // Does anyone have an idea why??
     inputHandler.fillStateOfBodiesRandomly(20, 696340, 10., -15, 0.1);
-
     inputHandler.fillStateOfBodiesRandomly(20, 696340, 10., 15, 0.3);
 
-    Simulation simulation(currentStateOfBodies, stateOfDataPointsOverTime, generalParameters);
-    simulation.runSimulation();
+    Simulation simulation(dt, algorithm, theta);
+    simulation.initializeFromVector(currentStateOfBodies);
+
+    for (int i=0; i < totalNumberOfSteps; i++){
+        simulation.runStep();
+        if (i % saveOnEveryXthStep == 0)
+            simulation.saveStep();
+    }
 
     GravityGUI gui(600, "Rescale", {-30.f, 60.f});
     
-    // gui.renderSnapshot(stateOfDataPointsOverTime[0]);
-    gui.renderTrajectory(stateOfDataPointsOverTime);
+    auto trajectory = simulation.getStateOfDataPointsOverTime();
+    gui.renderTrajectory(trajectory);
 
     return 0;
 }

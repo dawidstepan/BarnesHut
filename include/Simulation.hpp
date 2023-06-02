@@ -8,6 +8,7 @@
 #include "DataPoint.hpp"
 #include "gui.hpp"
 #include "ForceCalculator.hpp"
+#include "EulerIntegrator.hpp"
 
 /**
  * includes the core functionality of our program.
@@ -17,46 +18,21 @@
  */
 class Simulation {
 public:
-    Simulation(std::vector<Body> &currentStateOfBodies,
-               std::vector<std::vector<DataPoint>> &stateOfBodiesOverTime,
-               const GeneralParameters &generalParameters);
-
+    Simulation(const int dt = 3600, std::string algorithm = "Naive", float theta = 1);
 
     ///executes the Simulation
-    void runSimulation();
-    // void runSimulation(GravityGUI &GUI);
+    void runStep();
+
+    void saveStep();
+
+    void initializeFromVector (std::vector<Body> StateOfBodies);
+
+    std::vector<std::vector<DataPoint>> getStateOfDataPointsOverTime();
 
 private:
     /// the most basic approach to calculating the force between the objects
-    std::vector<Body> &currentStateOfBodies;
-    std::vector<std::vector<DataPoint>> &stateOfBodiesOverTime;
-    const GeneralParameters &generalParameters;
-    std::unique_ptr<ForceCalculator> ForceCalc;
+    std::vector<Body> currentStateOfBodies;
+    std::vector<std::vector<DataPoint>> stateOfBodiesOverTime;
+    std::unique_ptr<ForceCalculator> forceCalc;
+    std::unique_ptr<EulerIntegrator> integrator;
 };
-
-// class Simulation {
-// public:
-//     Simulation(std::vector<Body> &currentStateOfBodies,
-//                std::vector<std::vector<DataPoint>> &stateOfBodiesOverTime,
-//                const GeneralParameters &generalParameters) :
-//             currentStateOfBodies(currentStateOfBodies),
-//             stateOfBodiesOverTime(stateOfBodiesOverTime),
-//             generalParameters(generalParameters) {};
-
-
-//     ///executes the Simulation
-//     void runSimulation();
-//     // void runSimulation(GravityGUI &GUI);
-
-// private:
-//     /// the most basic approach to calculating the force between the objects
-//     Vector2D getForceByNaiveAlgorithm(std::vector<Body>, std::vector<Body>::iterator iteratorToBody);
-
-//     /// more sophisticated way of approximating the force
-//     Vector2D getForceByBarnesHutAlgorithm(std::vector<Body>, std::vector<Body>::iterator iteratorToBody);
-
-//     std::vector<Body> &currentStateOfBodies;
-//     std::vector<std::vector<DataPoint>> &stateOfBodiesOverTime;
-//     const GeneralParameters &generalParameters;
-// };
-
