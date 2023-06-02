@@ -27,7 +27,7 @@ public:
     /// creates n-bodies, randomly distributed over 10AU^2 (AU = astronomical unit)
     /// default values correspond roughly to size and mass of our sun
     void fillStateOfBodiesRandomly(int n,int size = 696340, double weight  = 1, 
-                                    double origin = 0, double scale = 0.1);
+                                    Vector2D origin = 0, Vector2D scale = 0.1);
 
 private:
     std::vector<Body> &stateOfBodies;

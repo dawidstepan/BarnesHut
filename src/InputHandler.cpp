@@ -14,7 +14,7 @@ void InputHandler::addToStateOfBodies(int size, double weight, Vector2D pos, Vec
 // yet to be implemented
 void InputHandler::parseFile() {}
 
-void InputHandler::fillStateOfBodiesRandomly(int n, int size, double weight, double origin, double scale) {
+void InputHandler::fillStateOfBodiesRandomly(int n, int size, double weight, Vector2D origin, Vector2D scale) {
     // Set seed value based on current time
     std::random_device rd;
     std::mt19937 gen(rd());
@@ -26,8 +26,8 @@ void InputHandler::fillStateOfBodiesRandomly(int n, int size, double weight, dou
     float randomValue = dist(gen);
 
     for(int m = 0; m<n; m++){
-        long double x = dist(gen) * scale + origin; //in astronomical units (1AU ~ 1.4e8 km)
-        long double y = dist(gen) * scale + origin;
+        long double x = dist(gen) * scale.x + origin.x; //in astronomical units (1AU ~ 1.4e8 km)
+        long double y = dist(gen) * scale.y + origin.y;
         Vector2D pos(x, y);
         Vector2D vel(0, 0);
         Vector2D acc(0, 0);

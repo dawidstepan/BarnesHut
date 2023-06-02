@@ -15,7 +15,7 @@ struct GravityGUI {
 
 private:
     sf::RenderWindow window;
-    std::unique_ptr<Transformation> transformation;
+    std::shared_ptr<Transformation> transformation;
     int print_fps_every;
 
 public:
