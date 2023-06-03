@@ -18,7 +18,6 @@ Simulation::Simulation
     float theta
 )
 {
-    std::unique_ptr<Integrator> useIntegrator;
     if (algorithm == "Naive") 
     {
         forceCalc = std::make_unique<NaiveForceCalculator>();
@@ -27,20 +26,23 @@ Simulation::Simulation
     {
         forceCalc = std::make_unique<BarnesHutForceCalculator>(theta);
     }
-    else if (algorithm == "verlet")
-    {
-        useIntegrator = std::make_unique<VerletIntegrator>();
-    }
-    else if (algorithm == "euler")
-    {
-        useIntegrator = std::make_unique<EulerIntegrator>();
-    }
     else
     {
         throw std::runtime_error("Unknown algorithm! Supported are 'Naive' and 'BarnesHut'");
     }
-
-    long int timestep = dt;
+    
+    if (usedIntegrator == "verlet")
+    {
+        useIntegrator = std::make_unique<VerletIntegrator>();
+    }
+    else if (usedIntegrator == "euler")
+    {
+        useIntegrator = std::make_unique<EulerIntegrator>(dt);
+    }
+    else
+    {
+        throw std::runtime_error("Unknown Integrator! Supported are 'verlet' and 'euler'");
+    }
 }
 
 void Simulation::runStep() {
@@ -59,23 +61,23 @@ void Simulation::runStep() {
         
 
         //dereferencing the iterator just for convenience
-        Body newBody = *iteratorToBody;
+        Body newBody = *iteratorToBody;     
+        
+        // integrating over the velocity to get the position, then converting from m to Astronomical Units (AU), then updating
+        Vector2D newPos = useIntegrator->integratePos(newBody);
+        newBody.setPos(newPos);
 
-            // integrating over the velocity to get the position, then converting from m to Astronomical Units (AU), then updating
-            Vector2D newPos = useIntegrator->integratePos(newBody);
-            newBody.setPos(newPos);
+        // calculate & update acceleration, acceleration in m/(s^2)
+        Vector2D currentAcc = newBody.getAcc();
+        Vector2D newAcc = totalForce / (newBody.getWeight() * sunMassToKg);
+        newBody.setAcc(newAcc);
 
-            // calculate & update acceleration, acceleration in m/(s^2)
-            Vector2D deltaAcc = totalForce / (newBody.getWeight() * sunMassToKg);
-            Vector2D currentAcc = newBody.getAcc();
-            newBody.setAcc(currentAcc + deltaAcc);
+        // integrating over the acceleration to get the velocity (in m/s), then updating it
+        Vector2D newVel = useIntegrator->integrateVel(newBody, currentAcc);
+        newBody.setVel(newVel);
 
-            // integrating over the acceleration to get the velocity (in m/s), then updating it
-            Vector2D newVel = useIntegrator->integrateVel(newBody, currentAcc);
-            newBody.setVel(newVel);
-
-            // now all the parameters in newBody are up-to-date
-            newStateOfBodies.push_back(newBody);
+        // now all the parameters in newBody are up-to-date
+        newStateOfBodies.push_back(newBody);
     }
 
     // overwrite the current state with the new state, and clear the new state

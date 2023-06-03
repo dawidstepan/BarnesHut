@@ -31,7 +31,7 @@ int main(){
     int saveOnEveryXthStep = 1;
     std::string algorithm = "Naive"; 
     std::string usedIntegrator = "verlet";
-    bool showLive = false;
+    bool showLive = true;
 
 
 

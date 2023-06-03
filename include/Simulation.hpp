@@ -39,6 +39,5 @@ private:
     std::vector<std::vector<DataPoint>> stateOfBodiesOverTime;
     std::unique_ptr<ForceCalculator> forceCalc;
     std::unique_ptr<Integrator> useIntegrator;
-    long int  timestep;
     
 };

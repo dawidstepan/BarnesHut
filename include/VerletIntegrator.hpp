@@ -1,8 +1,8 @@
-#ifndef GROUPMPROJECT_VERLETINTEGRATOR_HPP
-#define GROUPMPROJECT_VERLETINTEGRATOR_HPP
+#pragma once
 
 #include <Integrator.hpp>
 #include <Units.hpp>
+#include <iostream>
 
 /****************************************************************************
  * the verlet integration method is an advanced way to evaluate integrals numerically.
@@ -11,27 +11,26 @@
  class VerletIntegrator : public Integrator {
     public:
 
-    VerletIntegrator(): Integrator(), timestep(0) {};
+    //VerletIntegrator(int dt): timestep(dt) {};
         
 
-        virtual Vector2D integrateVel(Body body, Vector2D &delacc ) override {
+        virtual Vector2D integrateVel(Body &body, Vector2D &currentAcc ) override {
             Vector2D currentVel = body.getVel();
-            Vector2D currentAcc = body.getAcc();
-            Vector2D newVel = currentVel + (currentAcc - delacc * 0.5) * timestep;
+            Vector2D newAcc = body.getAcc();
+            Vector2D newVel = currentVel + (newAcc + currentAcc ) * timestep * 0.5;
             return newVel;
             };
 
-        virtual Vector2D integratePos(Body body) override {
+        virtual Vector2D integratePos(Body &body) override {
             Vector2D currentVel = body.getVel();
             Vector2D currentPos = body.getPos();
             Vector2D currentAcc = body.getAcc();
-            Vector2D newPos = currentPos * AUtoMeter + currentVel *  timestep + (currentVel) * timestep + currentAcc * 0.5 * timestep * timestep;
+            Vector2D newPos = currentPos * AUtoMeter + currentVel *  timestep + currentAcc * 0.5 * timestep * timestep;
             return newPos * meterToAU;
             };
 
+
     private:
+    int timestep=3600;
 
-    int timestep;
  };
-
-#endif //GROUPMPROJECT_VERLETINTEGRATOR_HPP

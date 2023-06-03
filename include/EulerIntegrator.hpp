@@ -1,5 +1,4 @@
-#ifndef GROUPMPROJECT_EULERINTEGRATOR_HPP
-#define GROUPMPROJECT_EULERINTEGRATOR_HPP
+#pragma once
 
 #include <Integrator.hpp>
 #include <Units.hpp>
@@ -10,16 +9,15 @@
 class EulerIntegrator : public Integrator {
 public:
 
-    EulerIntegrator(): Integrator(), timestep(0) {};
+    EulerIntegrator(long double dt): timestep(dt) {};
 
-    virtual Vector2D integrateVel(Body body, Vector2D &Da ) override {
-        Vector2D currentAcc = body.getAcc();
+    virtual Vector2D integrateVel(Body &body, Vector2D &currentAcc ) override {
         Vector2D currentVel = body.getVel();
         Vector2D newVel = currentVel + currentAcc * timestep;
         return newVel;
     };
 
-    virtual Vector2D integratePos(Body body) override {
+    virtual Vector2D integratePos(Body &body) override {
         Vector2D currentVel = body.getVel();
         Vector2D currentPos = body.getPos();
         Vector2D newPos = currentPos * AUtoMeter + currentVel * timestep;
@@ -28,7 +26,6 @@ public:
 
     private:
 
-    int timestep;
-};
+    long double timestep;
 
-#endif //GROUPMPROJECT_EULERINTEGRATOR_HPP
+};
