@@ -11,7 +11,7 @@
  class VerletIntegrator : public Integrator {
     public:
 
-    //VerletIntegrator(int dt): timestep(dt) {};
+    VerletIntegrator(long double dt): timestep(dt) {};
         
 
         virtual Vector2D integrateVel(Body &body, Vector2D &currentAcc ) override {
@@ -29,8 +29,9 @@
             return newPos * meterToAU;
             };
 
-
     private:
-    int timestep=3600;
+
+    long double timestep;
+
 
  };

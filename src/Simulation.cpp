@@ -33,7 +33,7 @@ Simulation::Simulation
     
     if (usedIntegrator == "verlet")
     {
-        useIntegrator = std::make_unique<VerletIntegrator>();
+        useIntegrator = std::make_unique<VerletIntegrator>(dt);
     }
     else if (usedIntegrator == "euler")
     {
