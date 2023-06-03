@@ -1,3 +1,4 @@
+// Cell.hpp
 #ifndef CELL_HPP
 #define CELL_HPP
 
@@ -5,38 +6,45 @@
 
 /**
  * @class Cell
- * @brief A class which represent a cell in a 2D space.
+ * @brief A class to represent a cell in a 2D space for a N-body simulation.
  */
 
 class Cell {
 public:
-    Cell(const Vector2D& position, double length) : position(position), length(length) {}
+    Cell(const Vector2D& center, double length) : center(center), length(length) {}
 
-    bool containsParticle(size_t index, const std::vector<Vector2D>& positions) const {
-        const Vector2D& particlePosition = positions[index];
-        double xMin = position.x - length / 2;
-        double xMax = position.x + length / 2;
-        double yMin = position.y - length / 2;
-        double yMax = position.y + length / 2;
+    bool containsParticle(const Vector2D& particlecenter) const {
+        double xMin = center.x - length / 2.0;
+        double xMax = center.x + length / 2.0;
+        double yMin = center.y - length / 2.0;
+        double yMax = center.y + length / 2.0;
 
-        return (particlePosition.x >= xMin && particlePosition.x <= xMax &&
-                particlePosition.y >= yMin && particlePosition.y <= yMax);
+        return (particlecenter.x >= xMin && particlecenter.x <= xMax &&
+                particlecenter.y >= yMin && particlecenter.y <= yMax);
     }
 
     Vector2D getMin() const {
-        return Vector2D(position.x - length / 2, position.y - length / 2);
+        return Vector2D(center.x - length / 2.0, center.y - length / 2.0);
     }
 
     Vector2D getMax() const {
-        return Vector2D(position.x + length / 2, position.y + length / 2);
+        return Vector2D(center.x + length / 2.0, center.y + length / 2.0);
     }
 
     double getLength() const {
         return length;
     }
 
+    double getHalfLength() const {
+        return length / 2.0;
+    }
+
+    const Vector2D getCenter() const {
+        return center;
+    }
+
 private:
-    Vector2D position;
+    Vector2D center;
     double length;
 };
 

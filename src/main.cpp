@@ -3,9 +3,9 @@
 
 # include "InputHandler.hpp"
 # include "Simulation.hpp"
+# include "gui.hpp"
 # include "Writer.hpp"
 # include "Body.hpp"
-# include "GeneralParameters.hpp"
 # include "DataPoint.hpp"
 
 
@@ -25,43 +25,47 @@
 
 int main(){
 
-    std::vector<Body> currentStateOfBodies;    ///< this vector contains the current state of all our bodies
-    std::vector<std::vector<DataPoint>> stateOfDataPointsOverTime; ///< contains a stripped-down copy of currentStateOfBodies for each timestep
-    GeneralParameters generalParameters{};
+    float theta = 1;    /// describes the quality of our Barnes-Hut approximation
+    int dt = 3600;         /// timestep in seconds
+    int totalNumberOfSteps = 2000;
+    int saveOnEveryXthStep = 1;
+    std::string algorithm = "Naive"; 
+    std::string usedIntegrator = "verlet";
+    bool showLive = false;
 
-    generalParameters.dt = 36000;   //dt in seconds
-    generalParameters.theta = 1;
-    generalParameters.totalNumberOfSteps=1000;
-    generalParameters.saveOnEveryXthStep=1;
-    generalParameters.algorithmToUse=0;
-    generalParameters.IntegratorToUse=0;
 
-    // random sample code to show some functions in action
-    /*
-     * x- & y coordinates in astronomical Units,
-     * weight in sun masses
-     */
-    
+
+    std::vector<Body> currentStateOfBodies; 
     InputHandler inputHandler(currentStateOfBodies);
 
-
-    // Manual creation of StateOfBodies:
-    // Vector2D initialPos1(0, 7);
-    // Vector2D initialPos2(0, 5);
-    // Vector2D nullVector(0, 0);
-    // inputHandler.addToStateOfBodies(6e3, 1, initialPos1, nullVector, nullVector);
-    // inputHandler.addToStateOfBodies(6e3, 1, initialPos2, nullVector, nullVector);
-    
     // Automatic creation of randomly distributed particles:
-    inputHandler.fillStateOfBodiesRandomly(100);
+    // Nico: this does not work with weights smaller than 1 (e.g. 0.5). 
+    // Does anyone have an idea why??
+    inputHandler.fillStateOfBodiesRandomly(200, 696340, 10, Vector2D(0, 0), Vector2D(100, 100));
+    inputHandler.fillStateOfBodiesRandomly(1, 696340, 100000, Vector2D(50, 50), Vector2D(10, 10));
 
-    Simulation simulation(currentStateOfBodies, stateOfDataPointsOverTime, generalParameters);
-    simulation.runSimulation();
+    Simulation simulation(dt, algorithm, usedIntegrator, theta);
+    simulation.initializeFromVector(currentStateOfBodies);
 
-    GravityGUI gui(600);
+
+    if (showLive)
+    {
+        GravityGUI gui(600, "Rescale", {-100.f, 200.f});
+        gui.renderSimulation(simulation);
+    }
+    else
+    {
+        for (int i=0; i < totalNumberOfSteps; i++){
+            simulation.runStep();
+            if (i % saveOnEveryXthStep == 0)
+                simulation.saveStep();
+        }
+
+        GravityGUI gui(600, "Rescale", {-200.f, 500.f});
+        
+        auto trajectory = simulation.getStateOfDataPointsOverTime();
+        gui.renderTrajectory(trajectory);
+    }
     
-    // gui.renderSnapshot(stateOfDataPointsOverTime[0]);
-    gui.renderTrajectory(stateOfDataPointsOverTime);
-
     return 0;
 }

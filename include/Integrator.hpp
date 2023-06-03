@@ -10,10 +10,16 @@
 
  class Integrator {
     public:
-        virtual Vector2D integrateVel(Body body, long double dt,Vector2D &Da )=0;
-        virtual Vector2D integratePos(Body body, long double dt)=0;
-        virtual ~Integrator() {}
-        
+
+        virtual Vector2D integrateVel(Body body,Vector2D &Da )=0;
+        virtual Vector2D integratePos(Body body)=0;
+        Integrator(): timestep(0) {};
+        virtual ~Integrator() {}  
+
+    private:
+        int timestep;     
  };
+
+    
 
  #endif //GROUPMPROJECT_INTEGRATOR_HPP

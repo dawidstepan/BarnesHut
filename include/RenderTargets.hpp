@@ -8,12 +8,14 @@
 
 #include <SFML/Graphics.hpp>
 #include <vector>
+#include <memory>
 
 /************************************************
  * ABC for transformations of a single value.
  ***********************************************/
 struct Transformation {
     virtual float apply(float value) = 0;
+    virtual float reverse(float value) = 0;
     
     virtual ~Transformation(){}
 };
@@ -24,6 +26,7 @@ struct Transformation {
  ***********************************************/
 struct Identity : public Transformation {
     float apply(float value) override;
+    float reverse(float value) override;
 };
 
 
@@ -36,8 +39,10 @@ struct Rescale : public Transformation {
 
 public:
     Rescale(float min, float max, float new_min, float new_max);
+    Rescale();
 
     float apply(float value) override;
+    float reverse(float value) override;
 
 private:
     float range;
@@ -46,6 +51,25 @@ private:
     float new_min;
 };
 
+struct ColorScale {
+
+ColorScale(float minValue, float maxValue, 
+            sf::Color color1 = sf::Color(59, 76, 192), // blue
+            sf::Color color2 = sf::Color(180, 4, 38)); // red
+
+public:
+
+    sf::Color interpolateColor(sf::Color color1, sf::Color color2, float t);
+
+    sf::Color getColorFromValue(float value);
+
+private:
+    float minValue;
+    float maxValue;
+    sf::Color color1;
+    sf::Color color2;
+
+};
 
 
 /************************************************
@@ -57,20 +81,12 @@ private:
  * This works so far for a single snapshot, but fails for a "trajectory" of 
  * snapshots, which should be the final goal to create an animation..
  ***********************************************/
-template <typename Transform>
 struct StateOfCircles {
 
 public:
     std::vector<sf::CircleShape> state;
-    Transform transform;
-
-    // StateOfCircles
-    // (
-    //     std::vector<Body> &stateOfBodies, 
-    //     float circleRadius = 10.f,
-    //     Transform transform = Identity()
-    // );
-
+    std::shared_ptr<Transformation> transform;
+    std::unique_ptr<ColorScale> color_scale;
 
     /************************************************
      * Constructor to create a StateOfCircles object from std::vector<DataPoint>
@@ -78,16 +94,19 @@ public:
     StateOfCircles
     (
         std::vector<DataPoint> &stateOfDataPoints, 
-        Transform transform,
+        std::shared_ptr<Transformation> trafo,
+        std::unique_ptr<ColorScale> scale,
+        float circleRadius = 10.f
+    );
+
+    StateOfCircles
+    (
+        std::vector<Body> &stateOfBodies, 
+        std::shared_ptr<Transformation> trafo,
+        std::unique_ptr<ColorScale> scale,
         float circleRadius = 10.f
     );
     
-
-    // void update_state_from_bodies
-    // (
-    //     std::vector<Body> &stateOfBodies,
-    //     bool showVelocity = false
-    // );
 
     /************************************************
      * Updates the positions of the sf::CircleShape instances contained in the
@@ -99,7 +118,10 @@ public:
         bool showVelocity = false
     );
 
+    void update_state_from_bodies
+    (
+        std::vector<Body> &stateOfBodies,
+        bool showVelocity = false
+    );
+
 };
-
-
-// #endif // GROUPMPROJECT_RENDERTARGETS_HPP

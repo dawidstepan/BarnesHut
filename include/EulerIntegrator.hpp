@@ -9,18 +9,26 @@
  ***************************************************************************/
 class EulerIntegrator : public Integrator {
 public:
-    virtual Vector2D integrateVel(Body body, long double dt,Vector2D &Da ) override {
+
+    EulerIntegrator(): Integrator(), timestep(0) {};
+
+    virtual Vector2D integrateVel(Body body, Vector2D &Da ) override {
         Vector2D currentAcc = body.getAcc();
         Vector2D currentVel = body.getVel();
-        Vector2D newVel = currentVel + currentAcc * dt;
+        Vector2D newVel = currentVel + currentAcc * timestep;
         return newVel;
     };
 
-    virtual Vector2D integratePos(Body body, long double dt) override {
+    virtual Vector2D integratePos(Body body) override {
         Vector2D currentVel = body.getVel();
         Vector2D currentPos = body.getPos();
-        Vector2D newPos = currentPos * AUtoMeter + currentVel * dt;
+        Vector2D newPos = currentPos * AUtoMeter + currentVel * timestep;
         return newPos * meterToAU;
     };
+
+    private:
+
+    int timestep;
 };
+
 #endif //GROUPMPROJECT_EULERINTEGRATOR_HPP
