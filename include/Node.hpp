@@ -5,6 +5,7 @@
 #include <memory>
 #include "Vector2D.hpp"
 #include "Cell.hpp"
+#include <stdexcept>
 
 /**
  * @class Node
