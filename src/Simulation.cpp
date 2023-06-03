@@ -13,7 +13,7 @@ void Simulation::runSimulation() {
     std::unique_ptr<Integrator> useIntegrator;
 
     // depending on the user input, that is stored in generalParameters, this pointer will point and create an instance of a different class
-    switch (generalParameters->IntegratorToUse)
+    switch (generalParameters.IntegratorToUse)
     {
     case 0: // this means we will use the euler method to integrate
         useIntegrator = std::make_unique<EulerIntegrator>();
@@ -46,7 +46,7 @@ void Simulation::runSimulation() {
             Body newBody = *iteratorToBody;
 
             // integrating over the velocity to get the position, then converting from m to Astronomical Units (AU), then updating
-            Vector2D newPos = useIntegrator->integratePos(newBody, generalParameters->dt);
+            Vector2D newPos = useIntegrator->integratePos(newBody, generalParameters.dt);
             newBody.setPos(newPos);
 
             // calculate & update acceleration, acceleration in m/(s^2)
@@ -55,7 +55,7 @@ void Simulation::runSimulation() {
             newBody.setAcc(currentAcc + deltaAcc);
 
             // integrating over the acceleration to get the velocity (in m/s), then updating it
-            Vector2D newVel = useIntegrator->integrateVel(newBody, generalParameters->dt, currentAcc);
+            Vector2D newVel = useIntegrator->integrateVel(newBody, generalParameters.dt, currentAcc);
             newBody.setVel(newVel);
 
             // now all the parameters in newBody are up-to-date

@@ -4,10 +4,9 @@
 #include <vector>
 #include "Vector2D.hpp"
 
-/**
- * the verlet integration method is an advanced way to evaluate integrals numerically
- * (header-only)
- */
+/****************************************************************************
+ * This Interface allows to switch between time integration methods.
+ ***************************************************************************/
 
  class Integrator {
     public:

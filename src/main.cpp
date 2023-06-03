@@ -41,9 +41,9 @@ int main(){
      * x- & y coordinates in astronomical Units,
      * weight in sun masses
      */
-    Vector2D initialPos1(0, -1);
-    Vector2D initialPos2(0, 1);
-    Vector2D nullVector(0, 0);
+    
+    InputHandler inputHandler(currentStateOfBodies);
+
 
     // Manual creation of StateOfBodies:
     // Vector2D initialPos1(0, 7);

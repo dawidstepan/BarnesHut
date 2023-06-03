@@ -4,10 +4,9 @@
 #include <Integrator.hpp>
 #include <Units.hpp>
 
-/**
- * the euler method is the most basic way to evaluate integrals numerically
- * (header-only)
- */
+/***************************************************************************
+ * the euler method is the most basic way to evaluate integrals numerically.
+ ***************************************************************************/
 class EulerIntegrator : public Integrator {
 public:
     virtual Vector2D integrateVel(Body body, long double dt,Vector2D &Da ) override {

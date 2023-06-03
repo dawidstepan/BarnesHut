@@ -4,17 +4,16 @@
 #include <Integrator.hpp>
 #include <Units.hpp>
 
-/**
- * the verlet integration method is an advanced way to evaluate integrals numerically
- * (header-only)
- */
+/****************************************************************************
+ * the verlet integration method is an advanced way to evaluate integrals numerically.
+ ***************************************************************************/
 
  class VerletIntegrator : public Integrator {
     public:
         virtual Vector2D integrateVel(Body body, long double dt, Vector2D &delacc ) override {
             Vector2D currentVel = body.getVel();
             Vector2D currentAcc = body.getAcc();
-            Vector2D newVel = currentVel + (currentAcc - delacc * 0.5) * dt; // THIS IS NOT CORRECT !!!!!!!!!!!!!!
+            Vector2D newVel = currentVel + (currentAcc - delacc * 0.5) * dt;
             return newVel;
             };
 
