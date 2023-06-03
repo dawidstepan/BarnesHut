@@ -35,6 +35,7 @@ endif()
 include(${CMAKE_BINARY_DIR}/conan.cmake)
 conan_cmake_run(CONANFILE conanfile.txt
                 BUILD missing
+                PROFILE default
                 BASIC_SETUP CMAKE_TARGETS)
 
 # include cmake_paths generator file to get package-supplied PackageConfig.cmake
