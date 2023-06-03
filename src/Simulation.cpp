@@ -2,11 +2,19 @@
 #include <cmath>
 
 #include "Simulation.hpp"
+#include "Integrator.hpp"
+#include "EulerIntegrator.hpp"
+#include "VerletIntegrator.hpp"
+#include "Units.hpp"
+#include "gui.hpp"
+#include "RenderTargets.hpp"
+#include <memory>
 
 Simulation::Simulation
 (
     const int dt,
     std::string algorithm,
+    std::string usedIntegrator,
     float theta
 )
 {
@@ -22,14 +30,24 @@ Simulation::Simulation
     {
         throw std::runtime_error("Unknown algorithm! Supported are 'Naive' and 'BarnesHut'");
     }
-
-    integrator = std::make_unique<EulerIntegrator>(dt);
-
+    
+    if (usedIntegrator == "verlet")
+    {
+        useIntegrator = std::make_unique<VerletIntegrator>(dt);
+    }
+    else if (usedIntegrator == "euler")
+    {
+        useIntegrator = std::make_unique<EulerIntegrator>(dt);
+    }
+    else
+    {
+        throw std::runtime_error("Unknown Integrator! Supported are 'verlet' and 'euler'");
+    }
 }
 
 void Simulation::runStep() {
-
-    std::vector<Body> newStateOfBodies; // describes how currentStateOfBodies will look after the next time step
+    std::vector<Body> newStateOfBodies;              // describes how currentStateOfBodies will look after the next time step
+    std::vector<DataPoint> currentStateOfDataPoints; // this is how we are going to save the data on our disc
 
     // now this will loop over all bodies, update their states and save them in newStateOfBodies
     for (auto iteratorToBody = currentStateOfBodies.begin(); iteratorToBody != currentStateOfBodies.end(); ++iteratorToBody) {
@@ -43,32 +61,29 @@ void Simulation::runStep() {
         
 
         //dereferencing the iterator just for convenience
-        Body newBody = *iteratorToBody;
-
-        //calculate & update acceleration, acceleration in m/(s^2)
-        Vector2D deltaAcc = totalForce / (newBody.getWeight() * sunMassToKg);
-        Vector2D currentAcc = newBody.getAcc();
-        newBody.setAcc(currentAcc + deltaAcc);
-
-        //integrating over the acceleration to get the velocity (in m/s), then updating it
-        long double vx = integrator->integrationStep(newBody.getVel().x, newBody.getAcc().x);
-        long double vy = integrator->integrationStep(newBody.getVel().y, newBody.getAcc().y);
-        Vector2D newVel(vx, vy);
-        newBody.setVel(newVel);
-
-        //integrating over the velocity to get the position, then converting from m to Astronomical Units (AU), then updating
-        long double x = integrator->integrationStep(newBody.getPos().x * AUtoMeter, newBody.getVel().x) * meterToAU;
-        long double y = integrator->integrationStep(newBody.getPos().y * AUtoMeter, newBody.getVel().y) * meterToAU;
-        Vector2D newPos(x, y);
+        Body newBody = *iteratorToBody;     
+        
+        // integrating over the velocity to get the position, then converting from m to Astronomical Units (AU), then updating
+        Vector2D newPos = useIntegrator->integratePos(newBody);
         newBody.setPos(newPos);
 
-        //now all the parameters in newBody are up-to-date
+        // calculate & update acceleration, acceleration in m/(s^2)
+        Vector2D currentAcc = newBody.getAcc();
+        Vector2D newAcc = totalForce / (newBody.getWeight() * sunMassToKg);
+        newBody.setAcc(newAcc);
+
+        // integrating over the acceleration to get the velocity (in m/s), then updating it
+        Vector2D newVel = useIntegrator->integrateVel(newBody, currentAcc);
+        newBody.setVel(newVel);
+
+        // now all the parameters in newBody are up-to-date
         newStateOfBodies.push_back(newBody);
     }
 
     // overwrite the current state with the new state, and clear the new state
     currentStateOfBodies.assign(newStateOfBodies.begin(), newStateOfBodies.end());
 }
+
 
 void Simulation::saveStep() {
     std::vector<DataPoint> currentStateOfDataPoints;    // this is how we are going to save the data on our disc

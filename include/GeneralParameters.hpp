@@ -12,6 +12,7 @@ struct GeneralParameters {
     int totalNumberOfSteps;
     int saveOnEveryXthStep;
     int algorithmToUse; /// 0=naive approach, 1=Barnes Hut
+    int IntegratorToUse; /// 0=euler, 1=verlet
 
 };
 

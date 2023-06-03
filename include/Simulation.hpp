@@ -6,6 +6,8 @@
 #include "Body.hpp"
 #include "DataPoint.hpp"
 #include "ForceCalculator.hpp"
+#include "Integrator.hpp"
+#include "VerletIntegrator.hpp"
 #include "EulerIntegrator.hpp"
 #include "Units.hpp"
 
@@ -17,7 +19,7 @@
  */
 struct Simulation {
 public:
-    Simulation(const int dt = 3600, std::string algorithm = "Naive", float theta = 1);
+    Simulation(const int dt = 3600, std::string algorithm = "Naive",std::string usedIntegrator = "euler", float theta = 1);
 
     ///executes the Simulation
     void runStep();
@@ -30,10 +32,12 @@ public:
 
     std::vector<Body> getCurrentStateOfBodies();
 
+    
 private:
     /// the most basic approach to calculating the force between the objects
     std::vector<Body> currentStateOfBodies;
     std::vector<std::vector<DataPoint>> stateOfBodiesOverTime;
     std::unique_ptr<ForceCalculator> forceCalc;
-    std::unique_ptr<EulerIntegrator> integrator;
+    std::unique_ptr<Integrator> useIntegrator;
+    
 };

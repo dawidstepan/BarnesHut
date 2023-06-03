@@ -30,8 +30,9 @@ int main(){
     int totalNumberOfSteps = 2000;
     int saveOnEveryXthStep = 1;
     std::string algorithm = "Naive"; 
+    std::string usedIntegrator = "verlet";
     bool showLive = true;
-    
+
 
 
     std::vector<Body> currentStateOfBodies; 
@@ -43,7 +44,7 @@ int main(){
     inputHandler.fillStateOfBodiesRandomly(200, 696340, 10, Vector2D(0, 0), Vector2D(100, 100));
     inputHandler.fillStateOfBodiesRandomly(1, 696340, 100000, Vector2D(50, 50), Vector2D(10, 10));
 
-    Simulation simulation(dt, algorithm, theta);
+    Simulation simulation(dt, algorithm, usedIntegrator, theta);
     simulation.initializeFromVector(currentStateOfBodies);
 
 

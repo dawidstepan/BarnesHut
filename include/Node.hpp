@@ -2,6 +2,7 @@
 #define NODE_HPP
 
 #include <vector>
+#include <array>
 #include <memory>
 #include "Vector2D.hpp"
 #include "Cell.hpp"
