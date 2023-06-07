@@ -1,12 +1,11 @@
+// Node.hpp
 #ifndef NODE_HPP
 #define NODE_HPP
 
 #include <vector>
-#include <array>
 #include <memory>
 #include "Vector2D.hpp"
 #include "Cell.hpp"
-#include <stdexcept>
 
 /**
  * @class Node
@@ -110,7 +109,7 @@ public:
         totalMass = mass;
     }
 
-    const Vector2D& getCenterOfMass() const {
+    Vector2D getCenterOfMass() const {
         return centerOfMass;
     }
 
