@@ -9,11 +9,11 @@ void Body::setSize(int size) {
     Body::size = size;
 }
 
-int Body::getWeight() const {
+double Body::getWeight() const {
     return weight;
 }
 
-void Body::setWeight(int weight) {
+void Body::setWeight(double weight) {
     Body::weight = weight;
 }
 

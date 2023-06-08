@@ -17,7 +17,7 @@
 class Body{
 public:
     Body(int size=0,
-         int weight=0,
+         double weight=0,
          Vector2D pos = Vector2D(0, 0),
          Vector2D vel = Vector2D(0, 0),
          Vector2D acc = Vector2D(0, 0)) :
@@ -32,9 +32,9 @@ public:
 
     void setSize(int size);
 
-    int getWeight() const;
+    double getWeight() const;
 
-    void setWeight(int weight);
+    void setWeight(double weight);
 
     const Vector2D &getPos() const;
 
@@ -50,7 +50,7 @@ public:
 
 private:
     int size; //< radius in km
-    long double weight; //< weight in sun Masses
+    double weight; //< weight in sun Masses
     Vector2D pos; //<position vector in Astronomical Units
     Vector2D vel; //<velocity vector in m/s
     Vector2D acc; //<acceleration vector in m/(s^2)

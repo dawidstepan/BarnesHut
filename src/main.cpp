@@ -1,12 +1,12 @@
 #include <vector>
 #include <iostream>
 
-# include "InputHandler.hpp"
-# include "Simulation.hpp"
-# include "gui.hpp"
-# include "Writer.hpp"
-# include "Body.hpp"
-# include "DataPoint.hpp"
+#include "InputHandler.hpp"
+#include "Simulation.hpp"
+#include "gui.hpp"
+#include "Writer.hpp"
+#include "Body.hpp"
+#include "DataPoint.hpp"
 
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -40,7 +40,8 @@ int main(){
 
     // Automatic creation of randomly distributed particles:
     // Nico: this does not work with weights smaller than 1 (e.g. 0.5). 
-    // Does anyone have an idea why??
+    // Does anyone have an idea why?? Dawid: Because it was defined in the Body class as an int.
+    // I've changed it to double. 
     inputHandler.fillStateOfBodiesRandomly(200, 696340, 10, Vector2D(0, 0), Vector2D(100, 100));
     inputHandler.fillStateOfBodiesRandomly(1, 696340, 100000, Vector2D(50, 50), Vector2D(10, 10));
 
