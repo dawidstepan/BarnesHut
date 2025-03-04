@@ -25,29 +25,22 @@
 
 int main(){
 
-    float theta = 1;    /// describes the quality of our Barnes-Hut approximation
+    float theta = 0.75;    /// describes the quality of our Barnes-Hut approximation
     int dt = 3600;         /// timestep in seconds
-    int totalNumberOfSteps = 2000;
-    int saveOnEveryXthStep = 1;
-    std::string algorithm = "Naive"; 
+    int totalNumberOfSteps = 200;
+    int saveOnEveryXthStep = 10;
+    std::string algorithm = "BarnesHut"; 
     std::string usedIntegrator = "verlet";
     bool showLive = true;
-
-
 
     std::vector<Body> currentStateOfBodies; 
     InputHandler inputHandler(currentStateOfBodies);
 
-    // Automatic creation of randomly distributed particles:
-    // Nico: this does not work with weights smaller than 1 (e.g. 0.5). 
-    // Does anyone have an idea why?? Dawid: Because it was defined in the Body class as an int.
-    // I've changed it to double. 
-    inputHandler.fillStateOfBodiesRandomly(200, 696340, 10, Vector2D(0, 0), Vector2D(100, 100));
+    inputHandler.fillStateOfBodiesRandomly(200, 696340, 0.5, Vector2D(0, 0), Vector2D(100, 100));
     inputHandler.fillStateOfBodiesRandomly(1, 696340, 100000, Vector2D(50, 50), Vector2D(10, 10));
 
     Simulation simulation(dt, algorithm, usedIntegrator, theta);
     simulation.initializeFromVector(currentStateOfBodies);
-
 
     if (showLive)
     {

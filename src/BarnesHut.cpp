@@ -5,13 +5,29 @@
 #include <cmath>
 #include <iostream>
 
-BarnesHut::BarnesHut(const std::vector<Body>& body, double theta, double lengthOfSpace)
-    : body(body), theta(theta),lengthOfSpace(lengthOfSpace) {}
+BarnesHut::BarnesHut(const std::vector<Body>& body, float theta)
+    : body(body), theta(theta) {}
+
+double BarnesHut::getMaxCoordinate(const std::vector<Body>& bodyVector) {
+    double maxX = 0.0;
+    double maxY = 0.0;
+
+    for (const auto& body : bodyVector) {
+        double posX = body.getPos().x;
+        double posY = body.getPos().y;
+
+        maxX = std::max(maxX, std::abs(posX));
+        maxY = std::max(maxY, std::abs(posY));
+    }
+    return std::max(maxX, maxY);
+}
 
 std::unique_ptr<Node> BarnesHut::buildTree() {
     // Initialize a root node
     Vector2D position(0.0, 0.0);
-    Cell rootCell(position, lengthOfSpace);
+    double lengthOfSpace = getMaxCoordinate(body);
+
+    Cell rootCell(position, 2 * lengthOfSpace);
     int level = 0;
     auto rootNode = std::make_unique<Node>(rootCell, position, level);
 
@@ -23,20 +39,16 @@ std::unique_ptr<Node> BarnesHut::buildTree() {
 }
 
 std::vector<Vector2D> BarnesHut::calculateForce() {
-/*  Test
     // Get the tree structure
     std::unique_ptr<Node> node = buildTree();
     std::vector<Vector2D> forces(body.size());
 
     // Calculate forces
-    for(size_t i = 0; i < body.size(); i++) {
-        forces[i] = calculateForceFromNode(node, body, i);
-        // Store calculated force
+    for (auto iteratorToBody = body.begin(); iteratorToBody != body.end(); ++iteratorToBody) {
+        size_t index = std::distance(body.begin(), iteratorToBody);
+        forces[index] = calculateForceFromNode(node, iteratorToBody);
     }
     return forces;
-*/  
-    std::vector<Vector2D> test;
-    return test;
 }
 
 void BarnesHut::addParticle(std::unique_ptr<Node>& node, const std::vector<Body>& body, size_t index) {
@@ -46,23 +58,6 @@ void BarnesHut::addParticle(std::unique_ptr<Node>& node, const std::vector<Body>
             //node->setTotalMass(body[index].getWeight());
             updateMassAndCenterOfMass(node, body, index);
         } else {
-            /*
-            // Generates four child nodes everytime when they missing and thus also redundant child nodes
-            for (int quadrant = 0; quadrant < 4; quadrant++) {
-                Vector2D childPosition = node->setChildPosition(quadrant);
-                Cell childCell(childPosition, node->getCell().getHalfLength());
-                node->addChild(quadrant, std::make_unique<Node>(childCell, childPosition));
-            }
-
-            int oldIndex = node->getParticleIndices().front();
-            node->getParticleIndices().clear();
-            Node::Quadrant oldQuadrant = node->getQuadrant(body[oldIndex].getPos());
-            addParticle(node->getChild(oldQuadrant), body, oldIndex);
-
-            // Add new particle to appropriate child node
-            Node::Quadrant newQuadrant = node->getQuadrant(body[index].getPos());
-            addParticle(node->getChild(newQuadrant), body, index);
-            */
             int oldIndex = node->getParticleIndices().front();
             node->getParticleIndices().clear();
             double oldMass = node->getTotalMass();
@@ -128,26 +123,24 @@ Vector2D BarnesHut::calculateBruteForce(size_t particleIndex1, size_t particleIn
     return (direction / distance) * magnitude;
 }
 
-/*
-// Test
-Vector2D BarnesHut::calculateForceFromNode(std::unique_ptr<Node>& node, const std::vector<Body>& body, size_t index) const {
-    if(node->isLeaf()) { 
-        return calculateForceFromParticle(body, node->getParticleIndices()[0], index);
+Vector2D BarnesHut::calculateForceFromNode(std::unique_ptr<Node>& node, std::vector<Body>::const_iterator iteratorToBody) {
+    if (node->isLeaf()) { 
+        return calculateForceFromParticle(std::next(body.begin(), node->getParticleIndices()[0]),iteratorToBody); 
     } else {
         Vector2D force(0, 0);
-        Vector2D bodyPosition = body[index].getPos();
-        double bodyWeigth = body[index].getWeight(); 
+        Vector2D bodyPosition = iteratorToBody->getPos();
+        double bodyWeight = iteratorToBody->getWeight(); 
 
         for(int i = 0; i < 4; i++) {
             std::unique_ptr<Node>& child = node->getChild(static_cast<Node::Quadrant>(i));
-            if(child) {
+            if (child) {
                 double distance = (child->getCenterOfMass() - bodyPosition).getNorm();
                 if (node->getCell().getLength() / distance < theta ) {
                     Vector2D direction = child->getCenterOfMass() - bodyPosition;
-                    double magnitude = (G * child->getTotalMass() * bodyWeigth) / (distance * distance);
+                    double magnitude = (G * child->getTotalMass() * bodyWeight) / (distance * distance);
                     force = force + direction * magnitude;
                 } else {
-                    force = force + calculateForceFromNode(child, body, index);
+                    force = force + calculateForceFromNode(child, iteratorToBody);
                 }
             }
         }
@@ -155,11 +148,11 @@ Vector2D BarnesHut::calculateForceFromNode(std::unique_ptr<Node>& node, const st
     }
 }
 
-Vector2D BarnesHut::calculateForceFromParticle(const std::vector<Body>& body, size_t particleIndex1, size_t particleIndex2) const { 
+Vector2D BarnesHut::calculateForceFromParticle(std::vector<Body>::const_iterator iteratorToBody1, std::vector<Body>::const_iterator iteratorToBody2) {
     Vector2D force(0, 0);
 
-    Body particle1 = body[particleIndex1];
-    Body particle2 = body[particleIndex2];
+    Body particle1 = *iteratorToBody1;
+    Body particle2 = *iteratorToBody2;
 
     Vector2D direction = particle1.getPos() - particle2.getPos();
     double distance = direction.getNorm();
@@ -173,4 +166,4 @@ Vector2D BarnesHut::calculateForceFromParticle(const std::vector<Body>& body, si
     } 
     return force;
 }
-*/
+

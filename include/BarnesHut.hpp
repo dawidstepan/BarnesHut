@@ -8,20 +8,20 @@
 
 class BarnesHut {
 public:
-    BarnesHut(const std::vector<Body>& body, double theta, double lengthOfSpace);
+    BarnesHut(const std::vector<Body>& body, float theta);
     std::unique_ptr<Node> buildTree();
     std::vector<Vector2D> calculateForce();
     Vector2D calculateBruteForce(size_t particleIndex1, size_t particleIndex2) const;
+    Vector2D calculateForceFromNode(std::unique_ptr<Node>& node, std::vector<Body>::const_iterator iteratorToBody);
+    Vector2D calculateForceFromParticle(std::vector<Body>::const_iterator iteratorToBody1, std::vector<Body>::const_iterator iteratorToBody2);
 
 private:
     void addParticle(std::unique_ptr<Node>& node, const std::vector<Body>& body, size_t index);
     void updateMassAndCenterOfMass(std::unique_ptr<Node>& node, const std::vector<Body>& body, size_t index);
-    //Vector2D calculateForceFromNode(std::unique_ptr<Node>& node, const std::vector<Body>& body, size_t index) const;
-    //Vector2D calculateForceFromParticle(const std::vector<Body>& body, size_t index1, size_t index2) const;
-
+    double getMaxCoordinate(const std::vector<Body>& body);
+   
     const std::vector<Body>& body;
-    double theta;
-    double lengthOfSpace;
+    float theta;
 };
 
 #endif // BARNESHUT_HPP

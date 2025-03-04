@@ -1,6 +1,10 @@
+#include "Body.hpp"
+#include "ForceCalculator.hpp"
+#include "BarnesHut.hpp"
+#include "Node.hpp"
+#include "Units.hpp"
+#include <cmath>
 #include <vector>
-#include <Body.hpp>
-#include <ForceCalculator.hpp>
 
 void NaiveForceCalculator::initializeFromParticles(std::vector<Body> &currentStateOfBodies) {}
 
@@ -23,7 +27,7 @@ Vector2D NaiveForceCalculator::getForceOnSingleParticle(std::vector<Body> &curre
             Vector2D distanceVector = pos2 - pos1;
             long double distanceNorm = distanceVector.getNorm();
             //calculating the force (in newton)
-            Vector2D force = distanceVector*((m1*m2)) / ((distanceNorm * distanceNorm * distanceNorm)) * conversionFactor;
+            Vector2D force = distanceVector * (m1 * m2) / (distanceNorm * distanceNorm * distanceNorm) * conversionFactor;
             totalForce =  totalForce + force;
         }
     }
@@ -31,11 +35,21 @@ Vector2D NaiveForceCalculator::getForceOnSingleParticle(std::vector<Body> &curre
 }
 
 
-BarnesHutForceCalculator::BarnesHutForceCalculator(float theta) : theta(theta) {};
+BarnesHutForceCalculator::BarnesHutForceCalculator(float theta) : theta(theta) {}
 
-
-void BarnesHutForceCalculator::initializeFromParticles(std::vector<Body> &currentStateOfBodies) {}
-
-Vector2D BarnesHutForceCalculator::getForceOnSingleParticle(std::vector<Body> &currentStateOfBodies, std::vector<Body>::iterator iteratorToBody) {
-    return Vector2D(0., 0.);
+void BarnesHutForceCalculator::initializeFromParticles(std::vector<Body>& currentStateOfBodies) {
+    // Initialize Barnes-Hut and build tree
+    barneshut = std::make_unique<BarnesHut>(currentStateOfBodies, theta);
+    node = barneshut->buildTree();
 }
+
+Vector2D BarnesHutForceCalculator::getForceOnSingleParticle(std::vector<Body>& currentStateOfBodies, std::vector<Body>::iterator iteratorToBody) {
+    Vector2D force(0, 0);
+
+    // Calculate forces
+    force = barneshut->calculateForceFromNode(node, iteratorToBody) * conversionFactor / G;
+
+    return force;
+}
+
+

@@ -10,21 +10,21 @@
 #include <vector>
 
 template <typename BodyType>
-void runBarnesHutForceCalculationTest(size_t numParticles, double lengthOfSpace, double epsilon) {
+void runBarnesHutForceCalculationTest(size_t numParticles, double epsilon) {
     const double theta = 0.0;
     std::vector<BodyType> body;
 
     // Generate random objects
     for (size_t i = 0; i < numParticles; ++i) {
-        double x = (static_cast<double>(rand()) / RAND_MAX) * 2 * lengthOfSpace - lengthOfSpace;
-        double y = (static_cast<double>(rand()) / RAND_MAX) * 2 * lengthOfSpace - lengthOfSpace;
+        double x = (static_cast<double>(rand()) / RAND_MAX) * 2.0 - 1.0;
+        double y = (static_cast<double>(rand()) / RAND_MAX) * 2.0 - 1.0;
         Vector2D pos(x, y);
-        double mass = static_cast<double>(rand()) / RAND_MAX * lengthOfSpace;
+        double mass = static_cast<double>(rand()) / RAND_MAX;
         body.push_back(BodyType(0, mass, pos, Vector2D(0, 0), Vector2D(0, 0)));
     }
 
     // Initialize Barnes-Hut
-    BarnesHut barneshut(body, theta, lengthOfSpace);
+    BarnesHut barneshut(body, theta);
 
     // Calculate forces using Barnes-Hut
     std::vector<Vector2D> forcesBarnesHut = barneshut.calculateForce();
@@ -49,11 +49,9 @@ void runBarnesHutForceCalculationTest(size_t numParticles, double lengthOfSpace,
 
 int main() {
     size_t numParticles = 1000;
-    double lengthOfSpace = 10.0;
     double epsilon = 1.0e-12;
 
-    // Test setzen wenn fertig!
-    //runBarnesHutForceCalculationTest<Body>(numParticles, lengthOfSpace, epsilon);
+    runBarnesHutForceCalculationTest<Body>(numParticles, epsilon);
 
     return 0;
 }

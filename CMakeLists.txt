@@ -41,7 +41,7 @@ conan_cmake_run(CONANFILE conanfile.txt
 # include cmake_paths generator file to get package-supplied PackageConfig.cmake
 include(${CMAKE_BINARY_DIR}/conan_paths.cmake)
 
-find_package(SFML REQUIRED)
+find_package(SFML COMPONENTS graphics REQUIRED)
 
 file(GLOB CPP_FILES "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp")
 file(GLOB_RECURSE HPP_FILES "${CMAKE_CURRENT_SOURCE_DIR}/include/*.hpp")

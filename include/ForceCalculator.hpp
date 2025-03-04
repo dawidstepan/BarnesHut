@@ -1,8 +1,11 @@
 #pragma once
 
+#include "Node.hpp"
+#include "BarnesHut.hpp"
 #include <vector>
 #include <Body.hpp>
 #include <Units.hpp>
+#include <memory>
 
 struct ForceCalculator {
 
@@ -24,14 +27,14 @@ struct NaiveForceCalculator : ForceCalculator {
 
 
 struct BarnesHutForceCalculator : ForceCalculator {
-
     BarnesHutForceCalculator(float theta);
 
-    void initializeFromParticles(std::vector<Body> &currentStateOfBodies) override;
+    void initializeFromParticles(std::vector<Body>& currentStateOfBodies) override;
 
-    Vector2D getForceOnSingleParticle(std::vector<Body> &currentStateOfBodies, std::vector<Body>::iterator iteratorToBody) override;
+    Vector2D getForceOnSingleParticle(std::vector<Body>& currentStateOfBodies, std::vector<Body>::iterator iteratorToBody) override;
 
-    private:
-        int BarnesHutTree; // computed in initalizeFromParticles
-        float theta;
+private:
+    std::unique_ptr<Node> node;
+    std::unique_ptr<BarnesHut> barneshut; // computed in initializeFromParticles
+    float theta;
 };

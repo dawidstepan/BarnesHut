@@ -43,14 +43,14 @@ Simulate the gravitational attraction between celestial bodies, e.g. colliding g
 ## Team
 <!-- A list of team mebers including student ID and their tasks.
 NOTE: "Testing" is not a valid task: EVERY memeber should immediately write tests for the components they implemented. However, there should be one person tying all tests together and creating some end-to-end tests. -->
-- Max Spannring (12104980): Team lead, Build configuration, input-parser
-- Dawid Stepanovic (00751062): Barnes-Hut 
-- Florian Buchner (01325815): Barnes-Hut 
-- Dominik Poppe (12008560): collision detection and integrator
-- Florian Schnabel (11807470): collision detection and integrator
-- Jakob Haupt (01529325): python wrapping
-- Nico Unglert (12144087): SFML GUI
-- Nika Krajnc (12128279): helper-tool
+- Max S.: Team lead, build configuration, input-parser
+- Dawid Stepanovic: Barnes-Hut and collision detection and integrator, and build configuration
+- Florian B.: Barnes-Hut 
+- Dominik P.: collision detection and integrator
+- Florian S.: collision detection and integrator
+- Jakob H.: python wrapping
+- Nico U.: SFML GUI
+- Nika K.: helper-tool
 
 ## References
 [1] https://www.nature.com/articles/324446a0 \

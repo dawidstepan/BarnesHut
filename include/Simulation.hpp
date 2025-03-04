@@ -19,7 +19,7 @@
  */
 struct Simulation {
 public:
-    Simulation(const int dt = 3600, std::string algorithm = "Naive",std::string usedIntegrator = "euler", float theta = 1);
+    Simulation(const int dt = 3600, std::string algorithm = "Naive",std::string usedIntegrator = "euler", float theta = 0.5);
 
     ///executes the Simulation
     void runStep();
