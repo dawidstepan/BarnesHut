@@ -44,7 +44,7 @@ Simulate the gravitational attraction between celestial bodies, e.g. colliding g
 <!-- A list of team mebers including student ID and their tasks.
 NOTE: "Testing" is not a valid task: EVERY memeber should immediately write tests for the components they implemented. However, there should be one person tying all tests together and creating some end-to-end tests. -->
 - Max S.: Team lead, build configuration, input-parser
-- Dawid Stepanovic: Barnes-Hut and collision detection and integrator, and build configuration
+- Dawid Stepanovic: Barnes-Hut, collision detection and integrator, and build configuration
 - Florian B.: Barnes-Hut 
 - Dominik P.: collision detection and integrator
 - Florian S.: collision detection and integrator
